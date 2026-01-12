@@ -17,7 +17,7 @@
             padding: 20px;
         }
 
-        .invoice-container {
+        .invoice-container { 
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
@@ -25,8 +25,8 @@
             max-width: 1000px;
             width: 100%;
             position: relative;
-            min-height: 600px; /* biar kotaknya panjang */
-            padding-bottom: 20px;
+            min-height: 600px;
+            padding-bottom: 30px;
         }
 
         .invoice-header {
@@ -78,44 +78,10 @@
             background-color: rgba(255, 255, 255, 0.2);
         }
 
-        .confirmation-badge {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .check-icon {
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #4CAF50;
-            font-weight: bold;
-        }
-
         .invoice-title {
             font-size: 28px;
             font-weight: 700;
             margin-bottom: 10px;
-            position: relative;
-        }
-
-        .invoice-id {
-            font-size: 16px;
-            opacity: 0.9;
-            font-weight: 500;
-            letter-spacing: 1px;
         }
 
         .invoice-body { padding: 40px; }
@@ -124,7 +90,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 0;
+            padding: 18px 0;
             border-bottom: 1px solid #f0f0f0;
             transition: all 0.3s ease;
         }
@@ -178,6 +144,21 @@
         .currency { font-size: 14px; opacity: 0.8; }
         .amount { font-weight: 700; }
 
+        .back-btn {
+            display:inline-block;
+            margin-top: 25px;
+            padding: 12px 24px;
+            background:#4CAF50;
+            color:#fff;
+            text-decoration:none;
+            border-radius:8px;
+            font-weight:600;
+            transition:background 0.3s;
+        }
+        .back-btn:hover {
+            background:#43a047;
+        }
+
         .footer {
             text-align: center;
             padding: 20px;
@@ -203,12 +184,14 @@
 <body>
     <div class="invoice-container">
         <div class="invoice-header">
-            <!-- Tombol close balik ke user.home -->
-            <a href="{{ route('user.home.index') }}" class="close-btn">&times;</a>
+    <!-- Tombol close balik ke user.home -->
+    <a href="{{ route('user.home.index') }}" class="close-btn">&times;</a>
 
-            <h1 class="invoice-title">Tagihan Bulan September 2025</h1>
-            <div class="invoice-id">INV6654C7D1</div>
-        </div>
+    <h1 class="invoice-title">
+        Tagihan Bulan {{ \Carbon\Carbon::parse($pembayaran->created_at)->translatedFormat('F Y') }}
+    </h1>
+    
+    </div>
         
         <div class="invoice-body">
     @php
@@ -233,6 +216,16 @@
             <span class="amount">{{ number_format($pembayaran->kebersihan, 0, ',', '.') }}</span>
         </div>
     </div>
+
+    {{-- Item tanggal jatuh tempo --}}
+    <div class="invoice-item">
+        <div class="item-name">Jatuh Tempo</div>
+        <div class="item-amount">
+            
+            <span class="amount">{{ \Carbon\Carbon::parse($pembayaran->tanggal_jatuh_tempo)->format('d-m-Y') }}</span>
+        </div>
+    </div>
+
     @php $subtotal += $pembayaran->kebersihan; @endphp
 
     {{-- Subtotal --}}

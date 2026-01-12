@@ -6,6 +6,7 @@ use App\Models\BiayaSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class PembayaranController extends Controller
 {
@@ -41,7 +42,6 @@ class PembayaranController extends Controller
         }
 
         $data = $query->latest()->paginate($perPage)->appends($request->all());
-
         return view('admin.pembayaran.index', compact('data'));
     }
 
@@ -50,14 +50,16 @@ class PembayaranController extends Controller
         return view('admin.pembayaran.create');
     }
 
+
+
     public function store(Request $request)
 {
-    $request->validate([
-        'keamanan'   => 'required|integer|min:0',
-        'kebersihan' => 'required|integer|min:0',
-    ]);
-
     $today = now();
+    $biaya = \App\Models\BiayaSetting::latest()->first();
+
+    if (!$biaya) {
+        return redirect()->back()->with('error', 'Silakan atur biaya setting terlebih dahulu.');
+    }
 
     if ($request->has('id_user') && $request->id_user) {
         // Buat pembayaran untuk user tertentu
@@ -68,16 +70,17 @@ class PembayaranController extends Controller
 
         if (!$exists) {
             Pembayaran::create([
-                'id_user'    => $request->id_user,
-                'keamanan'   => $request->keamanan,
-                'kebersihan' => $request->kebersihan,
-                'tanggal'    => $today,
-                'status'     => 'belum terbayar',
-                'total'      => $request->keamanan + $request->kebersihan,
+                'id_user'              => $request->id_user,
+                'keamanan'             => $biaya->keamanan,
+                'kebersihan'           => $biaya->kebersihan,
+                'tanggal'              => $today,
+                'tanggal_jatuh_tempo'  => $biaya->tanggal_jatuh_tempo, // ambil dari BiayaSetting
+                'status'               => 'belum terbayar',
+                'total'                => $biaya->keamanan + $biaya->kebersihan,
             ]);
         }
     } else {
-        // Buat pembayaran massal untuk semua user
+        // Buat pembayaran massal
         $users = \App\Models\User::all();
 
         foreach ($users as $user) {
@@ -88,12 +91,13 @@ class PembayaranController extends Controller
 
             if (!$exists) {
                 Pembayaran::create([
-                    'id_user'    => $user->id,
-                    'keamanan'   => $request->keamanan,
-                    'kebersihan' => $request->kebersihan,
-                    'tanggal'    => $today,
-                    'status'     => 'belum terbayar',
-                    'total'      => $request->keamanan + $request->kebersihan,
+                    'id_user'              => $user->id,
+                    'keamanan'             => $biaya->keamanan,
+                    'kebersihan'           => $biaya->kebersihan,
+                    'tanggal'              => $today,
+                    'tanggal_jatuh_tempo'  => $biaya->tanggal_jatuh_tempo, // ambil dari BiayaSetting
+                    'status'               => 'belum terbayar',
+                    'total'                => $biaya->keamanan + $biaya->kebersihan,
                 ]);
             }
         }
@@ -102,12 +106,14 @@ class PembayaranController extends Controller
     return redirect()->route('admin.pembayaran.index')->with('success', 'Pembayaran berhasil dibuat.');
 }
 
-
     public function edit($id)
     {
         $pembayaran = Pembayaran::with('dibayar')->findOrFail($id);
 
-        if (auth()->user()->role !== 'admin' && $pembayaran->id_user !== auth()->id()) {
+        $user = auth()->user();
+        $admin = auth()->guard('admin')->user();
+
+        if (!$admin && $pembayaran->id_user !== $user->id) {
             abort(403, 'Unauthorized');
         }
 
@@ -116,86 +122,83 @@ class PembayaranController extends Controller
 
     public function update(Request $request, $id)
     {
-        $pembayaran = Pembayaran::with('dibayar')->findOrFail($id);
+       $pembayaran = Pembayaran::with('dibayar')->findOrFail($id);
 
-        if (auth()->user()->role !== 'admin' && $pembayaran->id_user !== auth()->id()) {
-            abort(403, 'Unauthorized');
-        }
+    $user = auth()->user();
+    $admin = auth()->guard('admin')->user();
 
-        $request->validate([
-            'status' => 'required|in:belum terbayar,pembayaran berhasil',
-            'foto'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
-
-        DB::transaction(function() use ($request, $pembayaran) {
-            $pembayaran->update(['status' => $request->status]);
-
-            if ($request->hasFile('foto')) {
-                $file = $request->file('foto');
-                $filename = time().'_'.$file->getClientOriginalName();
-                $path = 'uploads/bukti/'.$filename;
-                $file->move(public_path('uploads/bukti'), $filename);
-
-                if ($pembayaran->dibayar) {
-                    if ($pembayaran->dibayar->foto && File::exists(public_path($pembayaran->dibayar->foto))) {
-                        File::delete(public_path($pembayaran->dibayar->foto));
-                    }
-                    $pembayaran->dibayar->update(['foto' => $path]);
-                } else {
-                    $pembayaran->dibayar()->create([
-                        'id_user' => $pembayaran->id_user,
-                        'rekening_id' => $request->rekening_id ?? null,
-                        'foto' => $path,
-                    ]);
-                }
-            }
-        });
-
-        return redirect()->route('admin.pembayaran.index')->with('success', 'Pembayaran berhasil diupdate.');
+    if (!$admin && $pembayaran->id_user !== $user->id) {
+        abort(403, 'Unauthorized');
     }
 
-    public function destroyPembayaran($id)
-    {
-        $pembayaran = Pembayaran::with('dibayar')->findOrFail($id);
+    $request->validate([
+        'status' => 'required|in:belum terbayar,pembayaran berhasil',
+    ]);
 
-        if (auth()->user()->role !== 'admin' && $pembayaran->id_user !== auth()->id()) {
-            abort(403, 'Unauthorized');
-        }
+    $pembayaran->update([
+        'status' => $request->status,
+    ]);
 
-        DB::transaction(function() use ($pembayaran) {
-            if ($pembayaran->dibayar && $pembayaran->dibayar->foto && File::exists(public_path($pembayaran->dibayar->foto))) {
-                File::delete(public_path($pembayaran->dibayar->foto));
-                $pembayaran->dibayar->delete();
-            }
-            $pembayaran->delete();
-        });
-
-        return redirect()->route('admin.pembayaran.index')->with('success', 'Pembayaran berhasil dihapus.');
+    return redirect()->route('admin.pembayaran.index')
+        ->with('success', 'Status pembayaran berhasil diperbarui.');
     }
 
-    public function destroyDibayar($id)
-    {
-        $pembayaran = Pembayaran::with('dibayar')->findOrFail($id);
+    
 
-        if (auth()->user()->role !== 'admin' && $pembayaran->id_user !== auth()->id()) {
-            abort(403, 'Unauthorized');
-        }
+public function destroyPembayaran($id)
+{
+    $pembayaran = Pembayaran::with('dibayar')->findOrFail($id);
 
-        DB::transaction(function() use ($pembayaran) {
-            if ($pembayaran->dibayar) {
-                if ($pembayaran->dibayar->foto && File::exists(public_path($pembayaran->dibayar->foto))) {
-                    File::delete(public_path($pembayaran->dibayar->foto));
-                }
-                $pembayaran->dibayar->delete();
-                $pembayaran->update(['status' => 'belum terbayar']);
-            }
-        });
+    $user = auth()->user();
+    $admin = auth()->guard('admin')->user();
 
-        return redirect()->route('admin.pembayaran.index')->with('success', 'Bukti pembayaran berhasil dihapus.');
+    if (!$admin && $pembayaran->id_user !== $user->id) {
+        abort(403, 'Unauthorized');
     }
 
+    DB::transaction(function () use ($pembayaran) {
+        if ($pembayaran->dibayar && $pembayaran->dibayar->foto) {
+            // hapus file dari storage (disk public)
+            Storage::disk('public')->delete($pembayaran->dibayar->foto);
 
-    public function generate(Request $request)
+            $pembayaran->dibayar->delete();
+        }
+        $pembayaran->delete();
+    });
+
+    return redirect()->route('admin.pembayaran.index')
+        ->with('success', 'Pembayaran berhasil dihapus.');
+}
+
+public function destroyDibayar($id)
+{
+    $pembayaran = Pembayaran::with('dibayar')->findOrFail($id);
+
+    $user = auth()->user();
+    $admin = auth()->guard('admin')->user();
+
+    if (!$admin && $pembayaran->id_user !== $user->id) {
+        abort(403, 'Unauthorized');
+    }
+
+    DB::transaction(function () use ($pembayaran) {
+        if ($pembayaran->dibayar) {
+            if ($pembayaran->dibayar->foto) {
+                // hapus file dari storage (disk public)
+                Storage::disk('public')->delete($pembayaran->dibayar->foto);
+            }
+            $pembayaran->dibayar->delete();
+
+            // reset status
+            $pembayaran->update(['status' => 'belum terbayar']);
+        }
+    });
+
+    return redirect()->route('admin.pembayaran.index')
+        ->with('success', 'Bukti pembayaran berhasil dihapus.');
+}
+
+     public function generate(Request $request)
 {
     $today = now();
     $biaya = \App\Models\BiayaSetting::latest()->first();
@@ -218,6 +221,7 @@ class PembayaranController extends Controller
                 'keamanan' => $biaya->keamanan,
                 'kebersihan' => $biaya->kebersihan,
                 'tanggal' => $today,
+                'tanggal_jatuh_tempo'  => $biaya->tanggal_jatuh_tempo,
                 'status' => 'belum terbayar',
                 'total' => $biaya->keamanan + $biaya->kebersihan,
             ]);

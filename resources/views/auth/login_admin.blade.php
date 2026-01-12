@@ -12,7 +12,8 @@
         @csrf
 
         <div class="input-group">
-            <input id="username" type="text" class="@error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" placeholder="Username" required autofocus>
+            <input id="username" type="text" class="@error('username') is-invalid @enderror" 
+                   name="username" value="{{ old('username') }}" placeholder="Username" required autofocus>
             @error('username')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
@@ -21,7 +22,8 @@
         </div>
 
         <div class="input-group">
-            <input id="password" type="password" class="@error('password') is-invalid @enderror" name="password" placeholder="Password" required>
+            <input id="password" type="password" class="@error('password') is-invalid @enderror" 
+                   name="password" placeholder="Password" required>
             @error('password')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
@@ -47,7 +49,7 @@
 <style>
     body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        background: linear-gradient(to bottom, #e74c3c, #c0392b);
+        background: #ffffff; /* 🔥 putih polos */
         display: flex;
         justify-content: center;
         align-items: center;
@@ -57,40 +59,39 @@
     }
 
     .login-container {
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(10px);
+        background: #fff;
         border-radius: 20px;
         padding: 40px;
         text-align: center;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         width: 100%;
         max-width: 400px;
         box-sizing: border-box;
+        border: 1px solid #eee;
     }
 
     .logo img {
         width: 100px;
         height: 100px;
         border-radius: 50%;
-        background-color: #f1faee;
-        border: 3px solid #c0392b;
+        background-color: #f9f9f9;
+        border: 3px solid #ddd;
         padding: 10px;
     }
 
     .residence-name {
         font-size: 24px;
         font-weight: 600;
-        color: #fff;
+        color: #333;
         margin: 20px 0 10px 0;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     .login-type {
         font-size: 18px;
         font-weight: 500;
-        color: #fff;
+        color: #555;
         margin: 0 0 25px 0;
-        background: rgba(231, 76, 60, 0.8);
+        background: #f4f4f4;
         padding: 8px 16px;
         border-radius: 20px;
         display: inline-block;
@@ -104,23 +105,23 @@
     .input-group input {
         width: 100%;
         padding: 15px 20px;
-        border: none;
+        border: 1px solid #ddd;
         border-radius: 10px;
-        background-color: rgba(255, 255, 255, 0.9);
+        background-color: #fff;
         font-size: 16px;
-        color: #c0392b;
-        transition: background-color 0.3s;
+        color: #333;
+        transition: border-color 0.3s, box-shadow 0.3s;
         box-sizing: border-box;
     }
     
     .input-group input:focus {
         outline: none;
-        background-color: rgba(255, 255, 255, 1);
-        box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.3);
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
     }
     
     .input-group input::placeholder {
-        color: rgba(192, 57, 43, 0.7);
+        color: #aaa;
     }
 
     .input-group .is-invalid {
@@ -128,12 +129,11 @@
     }
 
     .invalid-feedback {
-        color: #fff;
+        color: #e74c3c;
         font-size: 12px;
         position: absolute;
         bottom: -18px;
         left: 0;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     }
 
     .remember-me {
@@ -141,7 +141,7 @@
         align-items: center;
         justify-content: center;
         margin-bottom: 25px;
-        color: #fff;
+        color: #555;
     }
 
     .remember-me input[type="checkbox"] {
@@ -162,14 +162,14 @@
         font-size: 18px;
         font-weight: 600;
         color: white;
-        background: linear-gradient(to right, #c0392b, #a93226);
+        background: linear-gradient(to right, #3498db, #2c3e50);
         cursor: pointer;
         transition: background-color 0.3s, transform 0.2s;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
     .submit-btn:hover {
-        background: linear-gradient(to right, #a93226, #922b21);
+        background: linear-gradient(to right, #2c3e50, #3498db);
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
     }
@@ -177,17 +177,17 @@
     .switch-login {
         margin-top: 20px;
         padding-top: 20px;
-        border-top: 1px solid rgba(255, 255, 255, 0.3);
+        border-top: 1px solid #eee;
     }
 
     .switch-login p {
         margin: 0;
         font-size: 14px;
-        color: #fff;
+        color: #555;
     }
 
     .switch-login a {
-        color: #fff;
+        color: #3498db;
         text-decoration: none;
         font-weight: 600;
         border-bottom: 1px solid transparent;
@@ -195,7 +195,7 @@
     }
 
     .switch-login a:hover {
-        border-bottom: 1px solid #fff;
+        border-bottom: 1px solid #3498db;
     }
 </style>
 @endsection

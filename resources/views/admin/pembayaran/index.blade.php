@@ -143,7 +143,7 @@
                                                             <ul class="list-group text-start">
                                                                 <li class="list-group-item"><strong>Nama:</strong> {{ $pembayaran->user->name }}</li>
                                                                 <li class="list-group-item"><strong>No Rumah:</strong> {{ $pembayaran->user->no_rumah }}</li>
-                                                                <li class="list-group-item"><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($pembayaran->tanggal)->format('d-m-Y') }}</li>
+                                                                <li class="list-group-item"><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($pembayaran->tanggal_jatuh_tempo)->format('d-m-Y') }}</li>
                                                                 <li class="list-group-item"><strong>Total:</strong> Rp {{ number_format($pembayaran->total, 0, ',', '.') }}</li>
                                                                 <li class="list-group-item"><strong>Bank:</strong> {{ $pembayaran->dibayar->rekening->bank_name }}</li>
                                                                 <li class="list-group-item"><strong>No Rekening:</strong> {{ $pembayaran->dibayar->rekening->number }}</li>
@@ -157,7 +157,7 @@
                                                         </div>
                                                         <div class="col-md-6 text-center">
                                                             <p><strong>Bukti Pembayaran</strong></p>
-                                                            <img src="{{ asset('uploads/'.$pembayaran->dibayar->foto) }}" class="img-fluid rounded shadow" alt="Bukti Pembayaran">
+                                                            <img src="{{ asset('storage/'.$pembayaran->dibayar->foto) }}" class="img-fluid rounded shadow" alt="Bukti Pembayaran">
                                                         </div>
                                                     </div>
                                                 </div>

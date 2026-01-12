@@ -19,7 +19,7 @@
         <div class="mb-4">
             <span class="font-semibold">Foto Bukti:</span><br>
             @if($dibayar->foto)
-                <img src="{{ asset('uploads/' . $dibayar->foto) }}" alt="Bukti" class="h-40 mt-2">
+                <img src="{{ asset('storage/' . $dibayar->foto) }}" alt="Bukti" class="h-40 mt-2">
             @else
                 -
             @endif

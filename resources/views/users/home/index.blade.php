@@ -68,27 +68,45 @@
         <!-- Iklan Carousel Section -->
        @if($iklans->count() > 0)
 <div id="iklanCarousel" class="carousel slide my-4" data-bs-ride="carousel">
-  <div class="carousel-inner rounded shadow">
-    @foreach($iklans as $key => $iklan)
-      <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-        <img src="{{ asset('uploads/' . $iklan->gambar) }}" 
-             class="d-block w-100" 
-             alt="{{ $iklan->judul }}" 
-             style="max-height:200px; object-fit:cover; border-radius:8px;">
-        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
-          <h6 class="mb-0">{{ $iklan->judul }}</h6>
-          <small>{{ Str::limit($iklan->deskripsi, 50) }}</small>
-        </div>
-      </div>
-    @endforeach
-  </div>
+    <div class="carousel-inner rounded shadow">
 
-  <button class="carousel-control-prev" type="button" data-bs-target="#iklanCarousel" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon"></span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#iklanCarousel" data-bs-slide="next">
-    <span class="carousel-control-next-icon"></span>
-  </button>
+        @foreach($iklans as $key => $iklan)
+        <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+            {{-- Gambar --}}
+            <img src="{{ $iklan->gambar ? asset('storage/'.$iklan->gambar) : asset('images/default.jpg') }}"
+     class="d-block w-100"
+     alt="{{ $iklan->judul ?? 'Iklan' }}"
+     style="max-height:200px; object-fit:cover; border-radius:8px;">
+
+            {{-- Caption --}}
+            <div class="carousel-caption bg-dark bg-opacity-50 rounded p-2 text-start" 
+                 style="bottom: 10px; left: 10px; right: 10px;">
+                <h6 class="mb-1">{{ $iklan->judul ?? 'Tidak ada judul' }}</h6>
+                <small>{{ $iklan->deskripsi ? Str::limit($iklan->deskripsi, 50) : 'Tidak ada deskripsi' }}</small>
+            </div>
+        </div>
+        @endforeach
+
+    </div>
+
+    {{-- Kontrol carousel --}}
+    <button class="carousel-control-prev" type="button" data-bs-target="#iklanCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#iklanCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+
+    {{-- Indicators --}}
+    <div class="carousel-indicators mt-2">
+        @foreach($iklans as $key => $iklan)
+        <button type="button" data-bs-target="#iklanCarousel" data-bs-slide-to="{{ $key }}" 
+                class="{{ $key == 0 ? 'active' : '' }}" aria-current="{{ $key == 0 ? 'true' : 'false' }}" 
+                aria-label="Slide {{ $key + 1 }}"></button>
+        @endforeach
+    </div>
 </div>
 @endif
 
@@ -193,7 +211,7 @@
                 <div class="news-item">
                     <div class="news-image">
                         @if($item->gambar)
-                            <img src="{{ asset('uploads/' . $item->gambar) }}" 
+                            <img src="{{ asset('storage/'.$item->gambar) }}" 
                                 alt="{{ $item->judul }}" 
                                 style="width:100%; height:100%; object-fit:cover; border-radius:8px;">
                         @endif

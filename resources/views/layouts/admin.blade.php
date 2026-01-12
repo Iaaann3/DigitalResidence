@@ -9,7 +9,7 @@
   <link rel="shortcut icon" type="image/png" href="{{ asset('assets/images/logos/favicon.png') }}" />
   <link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}" />
 
-  <title>Modernize Bootstrap Admin</title>
+  <title>PP8B</title>
   <link rel="stylesheet" href="{{ asset('assets/libs/owl.carousel/dist/assets/owl.carousel.min.css') }}" />
 </head>
 
@@ -31,13 +31,19 @@
 
   <div id="main-wrapper">
     <!-- Sidebar Start -->
-    <aside class="left-sidebar with-vertical">
-      <div class="brand-logo d-flex align-items-center justify-content-between">
-        <h1>Admin IPL</h1>
-        <a href="javascript:void(0)" class="sidebartoggler ms-auto text-decoration-none fs-5 d-block d-xl-none">
-          <i class="ti ti-x"></i>
+   <aside class="left-sidebar with-vertical" id="sidebarDesktop">
+    <div class="brand-logo d-flex align-items-center justify-content-between">
+        
+        <img src="{{ asset('assets/images/big/pesona1.jpg') }}" alt="Logo"
+     class="rounded-circle border border-2 border-primary mx-auto d-block"
+     style="width:130px; height:130px; object-fit:cover;"  id="sidebarTitle">
+     
+        <a href="javascript:void(0)" class="sidebartoggler d-block d-xl-none" id="sidebarToggleMobile">
+            <i class="ti ti-x"></i>
         </a>
-      </div>
+    </div>
+
+     
 
       @include('layouts.components.sidebar')
 
@@ -86,6 +92,22 @@
   <script src="{{ asset('assets/libs/owl.carousel/dist/owl.carousel.min.js') }}"></script>
   <script src="{{ asset('assets/libs/apexcharts/dist/apexcharts.min.js') }}"></script>
   <script src="{{ asset('assets/js/dashboards/dashboard.js') }}"></script>
+  <script>
+const sidebarToggle = document.getElementById('headerCollapse');
+const sidebar = document.getElementById('sidebarDesktop');
+const sidebarTitle = document.getElementById('sidebarTitle');
+
+sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+
+    // sembunyikan judul saat sidebar collapsed
+    if(sidebar.classList.contains('collapsed')){
+        sidebarTitle.style.display = 'none';
+    } else {
+        sidebarTitle.style.display = 'block';
+    }
+});
+</script>
 </body>
 
 </html>

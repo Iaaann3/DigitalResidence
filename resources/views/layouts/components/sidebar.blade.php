@@ -27,7 +27,7 @@
 
             <!-- ---------------------------------- -->
              <li class="sidebar-item ">
-              <a class="sidebar-link {{ request()->routeIs('admin.rekening.*') ? 'bg-primary text-white rounded' : '' }}" href="{{ route('admin.rekenings.index') }}">
+              <a class="sidebar-link {{ request()->routeIs('admin.rekenings.*') ? 'bg-primary text-white rounded' : '' }}" href="{{ route('admin.rekenings.index') }}">
                 <span><i class="ti ti-building-bank"></i></span>
                 <span class="hide-menu">Rekening</span>
               </a>

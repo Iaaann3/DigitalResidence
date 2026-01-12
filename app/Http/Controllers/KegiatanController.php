@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Kegiatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class KegiatanController extends Controller
 {
@@ -23,26 +23,33 @@ class KegiatanController extends Controller
     {
         $request->validate([
             'nama_kegiatan' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'lokasi' => 'nullable|string|max:255',
-            'tanggal' => 'required|date',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'deskripsi'     => 'nullable|string',
+            'lokasi'        => 'nullable|string|max:255',
+            'tanggal'       => 'required|date',
+            'gambar'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        DB::transaction(function() use ($request) {
-            $data = $request->only(['nama_kegiatan','deskripsi','lokasi','tanggal']);
+        DB::transaction(function () use ($request) {
+            $data = $request->only([
+                'nama_kegiatan',
+                'deskripsi',
+                'lokasi',
+                'tanggal',
+            ]);
 
             if ($request->hasFile('gambar')) {
-                $file = $request->file('gambar');
-                $filename = time().'_'.$file->getClientOriginalName();
-                $file->move(public_path('uploads/kegiatan'), $filename);
-                $data['gambar'] = 'uploads/kegiatan/'.$filename;
+                $path = $request->file('gambar')
+                    ->store('kegiatan', 'public');
+
+                $data['gambar'] = $path;
             }
 
             Kegiatan::create($data);
         });
 
-        return redirect()->route('admin.kegiatan.index')->with('success', 'Kegiatan berhasil ditambahkan');
+        return redirect()
+            ->route('admin.kegiatan.index')
+            ->with('success', 'Kegiatan berhasil ditambahkan');
     }
 
     public function edit($id)
@@ -55,46 +62,55 @@ class KegiatanController extends Controller
     {
         $request->validate([
             'nama_kegiatan' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'lokasi' => 'nullable|string|max:255',
-            'tanggal' => 'required|date',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'deskripsi'     => 'nullable|string',
+            'lokasi'        => 'nullable|string|max:255',
+            'tanggal'       => 'required|date',
+            'gambar'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $kegiatan = Kegiatan::findOrFail($id);
 
-        DB::transaction(function() use ($request, $kegiatan) {
-            $data = $request->only(['nama_kegiatan','deskripsi','lokasi','tanggal']);
+        DB::transaction(function () use ($request, $kegiatan) {
+            $data = $request->only([
+                'nama_kegiatan',
+                'deskripsi',
+                'lokasi',
+                'tanggal',
+            ]);
 
             if ($request->hasFile('gambar')) {
-                if ($kegiatan->gambar && File::exists(public_path($kegiatan->gambar))) {
-                    File::delete(public_path($kegiatan->gambar));
+                if ($kegiatan->gambar) {
+                    Storage::disk('public')->delete($kegiatan->gambar);
                 }
 
-                $file = $request->file('gambar');
-                $filename = time().'_'.$file->getClientOriginalName();
-                $file->move(public_path('uploads/kegiatan'), $filename);
-                $data['gambar'] = 'uploads/kegiatan/'.$filename;
+                $path = $request->file('gambar')
+                    ->store('kegiatan', 'public');
+
+                $data['gambar'] = $path;
             }
 
             $kegiatan->update($data);
         });
 
-        return redirect()->route('admin.kegiatan.index')->with('success', 'Kegiatan berhasil diperbarui');
+        return redirect()
+            ->route('admin.kegiatan.index')
+            ->with('success', 'Kegiatan berhasil diperbarui');
     }
 
     public function destroy($id)
     {
         $kegiatan = Kegiatan::findOrFail($id);
 
-        DB::transaction(function() use ($kegiatan) {
-            if ($kegiatan->gambar && File::exists(public_path($kegiatan->gambar))) {
-                File::delete(public_path($kegiatan->gambar));
+        DB::transaction(function () use ($kegiatan) {
+            if ($kegiatan->gambar) {
+                Storage::disk('public')->delete($kegiatan->gambar);
             }
 
             $kegiatan->delete();
         });
 
-        return redirect()->route('admin.kegiatan.index')->with('success', 'Kegiatan berhasil dihapus');
+        return redirect()
+            ->route('admin.kegiatan.index')
+            ->with('success', 'Kegiatan berhasil dihapus');
     }
 }

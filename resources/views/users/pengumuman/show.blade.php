@@ -183,7 +183,7 @@
 
             @if($pengumuman->gambar)
                 <div class="image-container">
-                    <img src="{{ asset('uploads/' . $pengumuman->gambar) }}" alt="{{ $pengumuman->judul }}" class="detail-image">
+                    <img src="{{ asset('storage/'.$pengumuman->gambar) }}" alt="{{ $pengumuman->judul }}" class="detail-image">
                 </div>
             @endif
 

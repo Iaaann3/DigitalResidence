@@ -6,17 +6,21 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+ use Illuminate\Support\Facades\Storage;
 
 class IklanController extends Controller
 {
     public function index()
     {
-        $iklans = auth()->user()->role === 'admin'
-            ? Iklan::with('user')->latest()->paginate(5)
-            : Iklan::with('user')->where('id_user', auth()->id())->latest()->paginate(5);
-
+        if (auth()->guard('admin')->check()) {
+            $iklans = Iklan::with('user')->latest()->paginate(5);
+        } else {
+            $iklans = Iklan::with('user')
+                ->where('id_user', auth()->id())
+                ->latest()->paginate(5);
+        }
         $users = User::where('role', '!=', 'admin')->get();
-        return view('admin.iklan.index', compact('iklans', 'users'));
+        return view('admin.iklan.index', compact('iklans','users'));
     }
 
     public function create()
@@ -28,81 +32,95 @@ class IklanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'id_user' => 'required|exists:users,id',
-            'judul' => 'required|string|max:255',
+            'id_user'   => 'required|exists:users,id',
+            'judul'     => 'required|string|max:255',
             'deskripsi' => 'required|string',
-            'gambar' => 'nullable|image|max:5120',
+            'gambar'    => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         DB::transaction(function() use ($request) {
             $data = $request->except('gambar');
-
-            if ($request->hasFile('gambar')) {
+           if ($request->hasFile('gambar')) {
                 $file = $request->file('gambar');
                 $filename = time().'_'.$file->getClientOriginalName();
-                $file->move(public_path('uploads/iklan'), $filename);
-                $data['gambar'] = 'uploads/iklan/' . $filename;
+                
+                $file = $file->storeAs('iklan', $filename);
+                $data['gambar'] = $file;
             }
-
             Iklan::create($data);
         });
 
-        return redirect()->route('admin.iklan.index')->with('success', 'Iklan berhasil ditambahkan.');
+        return redirect()->route('admin.iklan.index')->with('success','Iklan berhasil ditambahkan.');
     }
 
     public function edit($id)
     {
         $iklan = Iklan::findOrFail($id);
-        if (auth()->user()->role !== 'admin' && $iklan->id_user !== auth()->id()) abort(403);
+        $user = auth()->user();
+        $admin = auth()->guard('admin')->user();
+        if (!$admin && $iklan->id_user !== $user->id) abort(403,'Unauthorized');
 
-        $users = User::where('role', '!=', 'admin')->get();
-        return view('admin.iklan.edit', compact('iklan', 'users'));
+        $users = User::where('role','!=','admin')->get();
+        return view('admin.iklan.edit', compact('iklan','users'));
     }
 
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'judul' => 'required|string|max:255',
-            'deskripsi' => 'required|string',
-            'gambar' => 'nullable|image|max:5120',
-        ]);
+   
 
-        $iklan = Iklan::findOrFail($id);
-        if (auth()->user()->role !== 'admin' && $iklan->id_user !== auth()->id()) abort(403);
+public function update(Request $request, $id)
+{
+    $iklan = Iklan::findOrFail($id);
+    $user = auth()->user();
+    $admin = auth()->guard('admin')->user();
 
-        DB::transaction(function() use ($request, $iklan) {
-            $data = $request->except('gambar');
+    if (!$admin && $iklan->id_user !== $user->id) {
+        abort(403, 'Unauthorized');
+    }
 
-            if ($request->hasFile('gambar')) {
-                // Hapus file lama
-                if ($iklan->gambar && File::exists(public_path($iklan->gambar))) {
-                    File::delete(public_path($iklan->gambar));
-                }
+    $request->validate([
+        'judul'     => 'required|string|max:255',
+        'deskripsi' => 'required|string',
+        'gambar'    => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+    ]);
 
-                $file = $request->file('gambar');
-                $filename = time().'_'.$file->getClientOriginalName();
-                $file->move(public_path('uploads/iklan'), $filename);
-                $data['gambar'] = 'uploads/iklan/' . $filename;
+    DB::transaction(function () use ($request, $iklan) {
+        $data = $request->except('gambar');
+
+        if ($request->hasFile('gambar')) {
+            // Hapus gambar lama bila ada
+            if ($iklan->gambar) {
+                Storage::disk('public')->delete($iklan->gambar);
             }
 
-            $iklan->update($data);
-        });
+            // Simpan gambar baru
+            $path = $request->file('gambar')->store('iklan', 'public');
+            $data['gambar'] = $path;
+        }
 
-        return redirect()->route('admin.iklan.index')->with('success', 'Iklan berhasil diperbarui.');
+        $iklan->update($data);
+    });
+
+    return redirect()->route('admin.iklan.index')
+        ->with('success', 'Iklan berhasil diperbarui.');
+}
+
+public function destroy($id)
+{
+    $iklan = Iklan::findOrFail($id);
+    $user = auth()->user();
+    $admin = auth()->guard('admin')->user();
+
+    if (!$admin && $iklan->id_user !== $user->id) {
+        abort(403, 'Unauthorized');
     }
 
-    public function destroy($id)
-    {
-        $iklan = Iklan::findOrFail($id);
-        if (auth()->user()->role !== 'admin' && $iklan->id_user !== auth()->id()) abort(403);
+    DB::transaction(function () use ($iklan) {
+        if ($iklan->gambar) {
+            Storage::disk('public')->delete($iklan->gambar);
+        }
+        $iklan->delete();
+    });
 
-        DB::transaction(function() use ($iklan) {
-            if ($iklan->gambar && File::exists(public_path($iklan->gambar))) {
-                File::delete(public_path($iklan->gambar));
-            }
-            $iklan->delete();
-        });
-
-        return redirect()->route('admin.iklan.index')->with('success', 'Iklan berhasil dihapus.');
-    }
+    return redirect()->route('admin.iklan.index')
+        ->with('success', 'Iklan berhasil dihapus.');
+}
 }

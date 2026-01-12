@@ -4,41 +4,40 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    /**
-     * Override username field to use no_rumah instead of email.
-     */
+    use AuthenticatesUsers;
+
     public function username()
     {
         return 'no_rumah';
     }
 
-    use AuthenticatesUsers;
-
     /**
-     * Redirect users after login based on their role.
+     * Override redirect setelah login
      */
-    protected function redirectTo()
+    protected function authenticated(Request $request, $user)
     {
-        $user = auth()->user();
-        if ($user && $user->role == 'admin') {
-            // Redirect ke halaman pembayaran admin
-            return route('admin.pembayaran.index');
-        } elseif ($user && $user->role == 'user') {
-            // Redirect ke dashboard user
-            return route('user.dashboard');
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.pembayaran.index');
         }
-        return '/home'; // fallback kalau role tidak jelas
+
+        if ($user->role === 'user') {
+            return redirect()->route('user.dashboard');
+        }
+
+        // Kalau role aneh → logout & balikin ke login dengan error
+        Auth::logout();
+        return redirect()->route('login')->withErrors([
+            'login' => 'Role tidak valid, hubungi admin.',
+        ]);
     }
 
-    /**
-     * Create a new controller instance.
-     */
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
-        $this->middleware('auth')->only('logout');
     }
 }

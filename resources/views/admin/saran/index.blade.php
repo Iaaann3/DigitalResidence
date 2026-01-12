@@ -1,4 +1,3 @@
-
 @extends('layouts.admin')
 
 @section('content')
@@ -15,29 +14,50 @@
                             <th>Email</th>
                             <th>Isi</th>
                             <th>Tanggal</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="text-center">
                         @forelse($kritiks as $saran)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $saran->nama }}</td>
-                                <td>{{ $saran->email }}</td>
+                                <td>{{ $kritiks->firstItem() + $loop->index }}</td>
+                                <td>{{ $saran->user->name ?? '-' }}</td>
+                                <td>{{ $saran->user->email ?? '-' }}</td>
                                 <td>{{ Str::limit($saran->isi, 50, '...') }}</td>
                                 <td>{{ $saran->created_at->format('d-m-Y H:i') }}</td>
+                                <td>
+                                    <!-- Tombol detail -->
+                                    <a href="{{ route('admin.saran.show', $saran->id) }}" 
+                                       class="btn btn-sm btn-info text-white">
+                                        Detail
+                                    </a>
+
+                                    <!-- Tombol hapus -->
+                                    <form action="{{ route('admin.saran.destroy', $saran->id) }}" 
+                                          method="POST" 
+                                          class="d-inline"
+                                          onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center">Belum ada data saran & kritik</td>
+                                <td colspan="6" class="text-center">Belum ada data saran & kritik</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
-               @if($kritiks->hasPages())
-    <div class="d-flex justify-content-center mt-3">
-        {{ $kritiks->links() }}
-    </div>
-          @endif
+
+                @if($kritiks->hasPages())
+                    <div class="d-flex justify-content-center mt-3">
+                        {{ $kritiks->links() }}
+                    </div>
+                @endif
             </div>
         </div>
     </div>

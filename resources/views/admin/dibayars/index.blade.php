@@ -24,7 +24,7 @@
                     <td class="px-4 py-2 border-b">{{ $dibayar->rekening->number ?? '-' }}</td>
                     <td class="px-4 py-2 border-b">
                         @if($dibayar->foto)
-                            <img src="{{ asset('uploads/' . $dibayar->foto) }}" alt="Bukti" class="h-12">
+                            <img src="{{ asset('storage/' . $dibayar->foto) }}" alt="Bukti" class="h-12">
                         @else
                             -
                         @endif

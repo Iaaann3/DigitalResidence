@@ -29,7 +29,7 @@
                                 <td>{{ \Carbon\Carbon::parse($pengumuman->tanggal)->format('d-m-Y') }}</td>
                                 <td>
                                     @if($pengumuman->gambar)
-                                        <img src="{{ asset('uploads/' . $pengumuman->gambar) }}"
+                                        <img src="{{ asset('storage/'.$pengumuman->gambar) }}"
                                             alt="{{ $pengumuman->judul }}" class="img-thumbnail" style="max-width:100px;">
                                     @else
                                         -

@@ -29,7 +29,7 @@
                                 <td>{{ Str::limit($iklan->deskripsi, 50, '...') }}</td>
                                 <td>
                                     @if($iklan->gambar)
-                                        <img src="{{ asset('uploads/' . $iklan->gambar) }}" 
+                                        <img src="{{ asset('storage/'.$iklan->gambar) }}" 
                                         alt="{{ $iklan->judul }}" 
                                         class="img-thumbnail" 
                                         style="max-width:100px;">
