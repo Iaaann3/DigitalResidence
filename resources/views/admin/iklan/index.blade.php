@@ -29,10 +29,17 @@
                                 <td>{{ Str::limit($iklan->deskripsi, 50, '...') }}</td>
                                 <td>
                                     @if($iklan->gambar)
-                                        <img src="{{ asset('storage/'.$iklan->gambar) }}" 
-                                        alt="{{ $iklan->judul }}" 
-                                        class="img-thumbnail" 
-                                        style="max-width:100px;">
+                                        <!-- Debug: Tampilkan path buat cek (hapus nanti)
+                                        <small class="d-block text-muted mb-1">Path: {{ $iklan->gambar }}</small>
+                                         -->
+                                        <!-- Full URL buat debug (liat di console kalau error) -->
+                                        <img src="{{ asset('storage/' . $iklan->gambar) }}" 
+                                             alt="{{ $iklan->judul }}" 
+                                             class="img-thumbnail" 
+                                             style="max-width:100px; max-height:100px;"
+                                             onerror="console.error('Gambar error loading: {{ asset('storage/' . $iklan->gambar) }}'); 
+                                                      this.src='https://via.placeholder.com/100x100?text=No+Image'; 
+                                                      this.title='Error: Cek console F12';">
                                     @else
                                         -
                                     @endif

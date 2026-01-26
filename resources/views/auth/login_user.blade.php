@@ -3,11 +3,22 @@
 @section('content')
 <div class="login-container">
     <div class="logo">
-        <!-- Ganti URL ini dengan path ke logo Anda -->
         <img src="{{ asset('assets/images/big/pesona1.jpg') }}" alt="Logo">
     </div>
     <h1 class="residence-name">Pesona Prima 8 Banjaran</h1>
 
+    <!-- Tombol Login Google -->
+    <div class="google-login-section">
+        <a href="{{ route('google.login') }}" class="google-login-btn">
+            <img src="https://www.google.com/favicon.ico" alt="Google Icon" class="google-icon">
+            <span>Login dengan Google</span>
+        </a>
+        <div class="divider">
+            <span>atau</span>
+        </div>
+    </div>
+
+    <!-- Form Login Biasa -->
     <form class="login-form" method="POST" action="{{ route('login') }}">
         @csrf
 
@@ -30,7 +41,10 @@
         </div>
         
         <div class="contact-admin-link">
-            <i class="fas fa-question-circle"></i> Belum terdaftar? <a href="#">Hubungi Admin</a>
+            <i class="fas fa-question-circle"></i> Belum terdaftar? 
+            <a href="https://wa.me/628815873744?text=Halo%20Admin,%20saya%20belum%20terdaftar" target="_blank">
+                Hubungi Admin
+            </a>
         </div>
         
         <button type="submit" class="submit-btn">
@@ -79,6 +93,66 @@
         margin: 20px 0;
     }
 
+    /* Google Login Button */
+    .google-login-section {
+        margin-bottom: 25px;
+    }
+
+    .google-login-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 12px 20px;
+        text-decoration: none;
+        color: #444;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .google-login-btn:hover {
+        background: #f7f7f7;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+    }
+
+    .google-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 12px;
+    }
+
+    .divider {
+        position: relative;
+        margin: 25px 0;
+        text-align: center;
+        color: #666;
+        font-size: 14px;
+    }
+
+    .divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #ddd;
+        z-index: 1;
+    }
+
+    .divider span {
+        position: relative;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 0 15px;
+        z-index: 2;
+    }
+
+    /* Form Input Styles */
     .input-group {
         margin-bottom: 20px;
         position: relative;
@@ -153,4 +227,21 @@
         background: linear-gradient(to right, #4a8035, #295214);
         transform: translateY(-2px);
     }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+        .login-container {
+            padding: 30px 20px;
+            margin: 0 15px;
+        }
+        
+        .residence-name {
+            font-size: 20px;
+        }
+    }
 </style>
+
+<!-- Font Awesome untuk icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+@endsection

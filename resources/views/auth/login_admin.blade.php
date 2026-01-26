@@ -3,9 +3,9 @@
 @section('content')
 <div class="login-container">
     <div class="logo">
-        <img src="{{ asset('assets/images/big/pesona1.jpg') }}" alt="Logo">
+        <img src="{{ asset('assets/images/logos/digital.png') }}" alt="Logo">
     </div>
-    <h1 class="residence-name">Pesona Prima 8 Banjaran</h1>
+    <h1 class="residence-name">Digital Residence</h1>
     <h2 class="login-type">Login Admin</h2>
 
     <form class="login-form" method="POST" action="{{ route('admin.login') }}">
@@ -21,19 +21,18 @@
             @enderror
         </div>
 
-        <div class="input-group">
+        <!-- Input Password dengan Toggle Eye -->
+        <div class="input-group password-group">
             <input id="password" type="password" class="@error('password') is-invalid @enderror" 
                    name="password" placeholder="Password" required>
+            <span class="toggle-password" onclick="togglePassword()">
+                <i class="fas fa-eye" id="toggle-icon"></i>
+            </span>
             @error('password')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
                 </span>
             @enderror
-        </div>
-
-        <div class="remember-me">
-            <input type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
-            <label for="remember">Remember Me</label>
         </div>
         
         <button type="submit" class="submit-btn">
@@ -136,6 +135,31 @@
         left: 0;
     }
 
+    /* Tambahan: Style untuk Password Toggle */
+    .password-group {
+        position: relative;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #aaa;
+        z-index: 10;
+        transition: color 0.3s;
+        padding: 5px;
+    }
+
+    .toggle-password:hover {
+        color: #3498db;
+    }
+
+    .toggle-password i {
+        font-size: 16px;
+    }
+
     .remember-me {
         display: flex;
         align-items: center;
@@ -198,4 +222,25 @@
         border-bottom: 1px solid #3498db;
     }
 </style>
+
+<!-- Font Awesome untuk icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<script>
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.getElementById('toggle-icon');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
+    }
+</script>
+
 @endsection

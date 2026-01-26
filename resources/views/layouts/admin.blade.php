@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <link rel="shortcut icon" type="image/png" href="{{ asset('assets/images/logos/favicon.png') }}" />
+  <link rel="shortcut icon" type="image/png" href="{{ asset('assets/images/logos/digital1.png') }}" />
   <link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}" />
 
   <title>PP8B</title>
@@ -14,7 +14,7 @@
 </head>
 
 <body>
-  <div class="toast toast-onload align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+  <!-- <div class="toast toast-onload align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="toast-body hstack align-items-start gap-6">
       <i class="ti ti-alert-circle fs-6"></i>
       <div>
@@ -23,10 +23,11 @@
       </div>
       <button type="button" class="btn-close btn-close-white fs-2 m-0 ms-auto shadow-none" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
-  </div>
+  </div> -->
 
   <div class="preloader">
-    <img src="{{ asset('assets/images/logos/favicon.png') }}" alt="loader" class="lds-ripple img-fluid" />
+    <img src="{{ asset('assets/images/logos/digital1.png') }}" alt="loader" 
+     class="lds-ripple" style="width: 150px;" />
   </div>
 
   <div id="main-wrapper">
@@ -34,7 +35,7 @@
    <aside class="left-sidebar with-vertical" id="sidebarDesktop">
     <div class="brand-logo d-flex align-items-center justify-content-between">
         
-        <img src="{{ asset('assets/images/big/pesona1.jpg') }}" alt="Logo"
+        <img src="{{ asset('assets/images/logos/digital.png') }}" alt="Logo"
      class="rounded-circle border border-2 border-primary mx-auto d-block"
      style="width:130px; height:130px; object-fit:cover;"  id="sidebarTitle">
      

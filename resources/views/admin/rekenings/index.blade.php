@@ -53,7 +53,7 @@
                 <table class="table table-striped table-hover align-middle text-center">
                     <thead class="bg-success text-white">
                         <tr>
-                            <th>#</th>
+                            <th>No</th>
                             <th>Bank</th>
                             <th>Nomor Rekening</th>
                             <th>Aksi</th>

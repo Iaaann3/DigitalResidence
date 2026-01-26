@@ -59,7 +59,7 @@
                 <table class="table table-striped table-hover align-middle text-center">
                     <thead class="bg-success text-white">
                         <tr>
-                            <th>#</th>
+                            <th>No</th>
                             <th>Nama User</th>
                             <th>No Rumah</th>
                             <th>Keamanan</th>

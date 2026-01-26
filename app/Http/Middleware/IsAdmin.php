@@ -1,11 +1,10 @@
 <?php
-
 namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class IsAdmin
 {
@@ -17,11 +16,12 @@ class IsAdmin
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function handle(Request $request, Closure $next): Response
-{
-    if (Auth::check() && Auth::user()->role === 'admin') {
-        return $next($request);
-    }
+    {
+        // Cek guard 'admin', BUKAN guard default
+        if (Auth::guard('admin')->check()) {
+            return $next($request);
+        }
 
-    abort(403, 'Anda tidak berhak mengakses halaman ini.');
-}
+        abort(403, 'Anda tidak berhak mengakses halaman ini.');
+    }
 }

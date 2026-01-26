@@ -25,14 +25,12 @@
             <div class="d-flex align-items-center w-100 justify-content-between">
 
                 {{-- Form Pencarian --}}
-                <form class="d-flex me-auto" method="GET" action="{{ url()->current() }}">
-                    <input type="text" name="search" class="form-control form-control-sm"
-                           placeholder="Cari..." value="{{ request('search') }}">
-                    <button class="btn btn-sm btn-primary ms-1" type="submit">
-                        <i class="ti ti-search"></i>
-                    </button>
+                <form class="d-flex align-items-center me-auto">
+                    <h5 class="mb-0 text-uppercase fw-bold text-primary">
+                        Digital
+                        <span class="fw-normal text-muted">Residence</span>
+                    </h5>
                 </form>
-
                 {{-- Navbar kanan --}}
                 <ul class="navbar-nav flex-row align-items-center">
 
@@ -91,8 +89,15 @@
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             
-                            <li><a class="dropdown-item" href="{{ route('logout') }}">Logout</a></li>
-                        </ul>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}" id="logout-form" style="display: none;">
+                                    @csrf
+                                </form>
+                                <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    Logout
+                                </a>
+                            </li>
+                            </ul>
                     </li>
 
                 </ul>
