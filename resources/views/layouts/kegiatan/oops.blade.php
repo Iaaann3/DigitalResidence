@@ -36,7 +36,7 @@
         <div class="error-text">
             <h1 class="oops-title">Oops...</h1>
             <p class="error-message">Tidak ada kegiatan ditemukan.</p>
-            <a href="{{ url()->previous() }}" class="back-button">⬅️ Kembali</a>
+            <a href="{{ url()->previous() }}" class="back-button">Kembali</a>
         </div>
     </div>
 </div>

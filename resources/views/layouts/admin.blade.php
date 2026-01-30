@@ -44,30 +44,12 @@
         </a>
     </div>
 
-     
+    <!-- User Info Header (Pindah ke sini biar gak overlap, ganti fixed-profile) -->
+    <div style="position: relative; z-index: 10;">
+      
+    </div>
 
       @include('layouts.components.sidebar')
-
-  <div class="fixed-profile p-3 mx-4 mb-2 bg-secondary-subtle rounded"
-    style="margin-top:-50px; position: relative; z-index: 1000;">
-  <div class="hstack gap-3">
-    <div class="john-img">
-      <img src="{{ asset('assets/images/profile/user-1.jpg') }}" class="rounded-circle" width="40" height="40" alt="modernize-img" />
-    </div>
-    <div class="john-title">
-      <h6 class="mb-0 fs-4 fw-semibold">{{ Auth::user()->name ?? 'Admin' }}</h6>
-      <span class="fs-2">{{ Auth::user()->role ?? 'Admin' }}</span>
-    </div>
-
-    <!-- Tombol Logout -->
-<form action="{{ route('logout') }}" method="POST" class="ms-auto align-self-start">
-  @csrf
-  <button type="submit" class="border-0 bg-transparent text-danger mt-n1" title="Logout">
-    <i class="ti ti-power fs-6"></i>
-  </button>
-</form>
-  </div>
-</div>
     </aside>
     <!-- Sidebar End -->
 
@@ -76,6 +58,7 @@
 
       <div class="container-fluid">
         @yield('content')
+        @stack('scripts')
 
       </div>
     </div>

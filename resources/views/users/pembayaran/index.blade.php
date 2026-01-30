@@ -5,7 +5,7 @@
     <!-- Judul Halaman -->
     <div class="text-center mb-4">
         <h2 class="fw-bold text-success">Payment History</h2>
-        <p class="text-muted">Pertahankan riwayat pembayaran anda demi kemajuan Pesona Prima 8 Banjaran.</p>
+        <p class="text-muted">Pertahankan riwayat pembayaran anda demi kemajuan Digital Residence.</p>
     </div>
 
     <!-- Daftar Transaksi -->
@@ -14,13 +14,13 @@
             <div class="card-body d-flex align-items-center">
                 <!-- Icon -->
                 <div class="me-3">
-                    <img src="{{ asset('assets/images/big/pesona1.jpg') }}" alt="icon" width="48" height="48" class="rounded-circle" style="object-fit:cover;">
+                    <img src="{{ asset('assets/images/logos/digital.png') }}" alt="icon" width="48" height="48" class="rounded-circle" style="object-fit:cover;">
                 </div>
 
                 <!-- Detail Transaksi -->
                 <div class="flex-grow-1">
                     <small class="text-muted">
-                        {{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F, Y') }}
+                        {{ \Carbon\Carbon::parse($item->tanggal_jatuh_tempo)->translatedFormat('d F, Y') }}
                     </small>
                     <h5 class="mb-1 text-success">
                         Rp {{ number_format($item->total, 0, ',', '.') }}

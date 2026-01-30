@@ -202,7 +202,7 @@
             </div>
 
             <a href="{{ route('user.pengumuman.index') }}" class="back-button">
-                ⬅️ Kembali ke Daftar
+                Kembali ke Daftar
             </a>
         </div>
     </div>

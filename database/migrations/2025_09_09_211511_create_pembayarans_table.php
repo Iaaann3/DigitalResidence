@@ -20,7 +20,8 @@ return new class extends Migration
             $table->date('tanggal_tagih')->nullable(); // tanggal mulai ditagihkan
             $table->date('tanggal_jatuh_tempo')->nullable(); // batas akhir pembayaran
             $table->enum('status', ['belum terbayar', 'pembayaran berhasil'])->default('belum terbayar');
-            $table->foreignId('dibayar_id')->nullable()->constrained('dibayars')->nullOnDelete();
+            $table->unsignedBigInteger('dibayar_id')->nullable(); // Tanpa constrained dulu, biar gak error
+            $table->string('order_id')->nullable();
             $table->integer('total')->default(0);
             $table->timestamps();
         });

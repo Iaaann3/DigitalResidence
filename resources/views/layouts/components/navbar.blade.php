@@ -89,12 +89,13 @@
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}" id="logout-form" style="display: none;">
+                            <li class="nav-item">
+                                <!-- Form Logout -->
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                     @csrf
                                 </form>
-                                <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                    Logout
+                                <a class="nav-link" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Logout
                                 </a>
                             </li>
                             </ul>

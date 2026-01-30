@@ -547,7 +547,7 @@
                         </div>
                         @if(isset($item->id))
                         <a href="{{ route('user.pengumuman.show', $item->id) }}" class="read-more">
-                            Baca Selengkapnya →
+                            Baca Selengkapnya
                         </a>
                         @endif
                     </div>

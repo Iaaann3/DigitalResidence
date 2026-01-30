@@ -2,7 +2,7 @@
     <div class="row align-items-center no-gutters">
         <!-- Logo -->
         <div class="col-auto d-flex align-items-center">
-            <img src="{{ asset('assets/images/big/pesona1.jpg') }}" 
+            <img src="{{ asset('assets/images/logos/digital.png') }}" 
                  alt="Logo" 
                  class="rounded-circle border border-2 border-primary me-2" 
                  style="width:40px; height:40px; object-fit:cover;">
@@ -10,8 +10,8 @@
 
         <!-- Title -->
         <div class="col text-center">
-            <span class="fw-bold text-dark" style="font-size: 15px; letter-spacing:0.5px;">
-                Pesona Prima 8 Banjaran
+            <span class="fw-bold text-dark" style="font-size: 17px; letter-spacing:0.5px;">
+                Digital Residence
             </span>
         </div>
 
@@ -45,15 +45,15 @@
                             <i class="fas fa-envelope-open-text text-success me-2"></i> Kritik & Saran
                         </a>
                     </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
+                    <!-- <li><hr class="dropdown-divider"></li> -->
+                    <!-- <li>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="dropdown-item text-danger px-3 py-2">
                                 <i class="fas fa-power-off me-2"></i> Log out
                             </button>
                         </form>
-                    </li>               
+                    </li> -->
                 </ul>
             </div>
         </div>

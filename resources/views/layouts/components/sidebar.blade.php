@@ -51,6 +51,12 @@
                 <span class="hide-menu">Kegiatan</span>
               </a>
             </li>
+            <li class="sidebar-item">
+            <a class="sidebar-link {{ request()->routeIs('admin.keluhan.*') ? 'bg-primary text-white rounded' : '' }}" href="{{ route('admin.keluhan.index') }}">
+              <span><i class="ti ti-cash"></i></span>
+              <span class="hide-menu">Keluhan Warga</span>
+            </a>
+          </li>
             <li class="sidebar-item ">
               <a class="sidebar-link {{ request()->routeIs('admin.saran.*') ? 'bg-primary text-white rounded' : '' }}" href="{{ route('admin.saran.index') }}">
                 <span><i class="ti ti-message-dots"></i></span>

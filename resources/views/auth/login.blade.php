@@ -65,6 +65,12 @@
 </div>
 
 <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
     body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         background: linear-gradient(to bottom, #a8dadc, #f1faee);
@@ -73,7 +79,9 @@
         align-items: center;
         min-height: 100vh;
         margin: 0;
+        padding: 0;
         color: #333333;
+        width: 100%;
     }
 
     .login-container {
@@ -86,6 +94,14 @@
         width: 100%;
         max-width: 400px;
         box-sizing: border-box;
+        margin: 0 auto;
+    }
+
+    .logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
     }
 
     .logo img {
@@ -95,19 +111,25 @@
         background-color: #f1faee;
         border: 3px solid #457b9d;
         padding: 10px;
+        object-fit: contain;
     }
 
     .residence-name {
         font-size: 24px;
         font-weight: 600;
         color: #457b9d;
-        margin: 20px 0;
+        margin: 0 0 30px 0;
+    }
+
+    .login-form {
+        width: 100%;
     }
 
     /* Form Input Styles */
     .input-group {
         margin-bottom: 20px;
         position: relative;
+        width: 100%;
     }
 
     .input-group input {
@@ -142,9 +164,10 @@
         position: absolute;
         bottom: -18px;
         left: 0;
+        text-align: left;
     }
 
-    /* Tambahan: Style untuk Password Toggle */
+    /* Password Toggle */
     .password-group {
         position: relative;
     }
@@ -171,8 +194,11 @@
 
     .contact-admin-link {
         font-size: 14px;
-        margin-bottom: 25px;
+        margin-top: 20px;
         color: #457b9d;
+        text-align: center;
+        width: 100%;
+        line-height: 1.6;
     }
     
     .contact-admin-link a {
@@ -181,6 +207,8 @@
         font-weight: 500;
         border-bottom: 1px solid transparent;
         transition: border-bottom 0.3s;
+        display: inline-block;
+        margin-top: 5px;
     }
     
     .contact-admin-link a:hover {
@@ -198,7 +226,8 @@
         background: linear-gradient(to right, #20535a, #197072);
         cursor: pointer;
         transition: background-color 0.3s, transform 0.2s;
-        margin-bottom: 25px;
+        margin-bottom: 0;
+        box-sizing: border-box;
     }
 
     .submit-btn:hover {
@@ -206,7 +235,7 @@
         transform: translateY(-2px);
     }
 
-    /* Google Login Button Styles */
+    /* Google Login Button */
     .google-login-btn {
         display: flex;
         align-items: center;
@@ -221,6 +250,8 @@
         transition: all 0.3s ease;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         margin-top: 20px;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .google-login-btn:hover {
@@ -233,15 +264,17 @@
         width: 20px;
         height: 20px;
         margin-right: 12px;
+        flex-shrink: 0;
     }
 
-    /* Divider Styles */
+    /* Divider */
     .divider {
         position: relative;
         margin: 25px 0;
         text-align: center;
         color: #666;
         font-size: 14px;
+        width: 100%;
     }
 
     .divider::before {
@@ -263,25 +296,129 @@
         z-index: 2;
     }
 
-    /* Responsive */
-    @media (max-width: 480px) {
+    /* Alert */
+    .alert {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Responsive - Tablet */
+    @media (max-width: 768px) {
+        body {
+            padding: 20px;
+        }
+
         .login-container {
-            padding: 30px 20px;
-            margin: 0 15px;
+            padding: 35px 30px;
+            max-width: 100%;
+        }
+    }
+
+    /* Responsive - Mobile Large */
+    @media (max-width: 480px) {
+        body {
+            padding: 15px;
+        }
+
+        .login-container {
+            padding: 30px 25px;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        .logo img {
+            width: 85px;
+            height: 85px;
         }
         
         .residence-name {
-            font-size: 20px;
+            font-size: 22px;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-group input {
+            padding: 14px 18px;
+            font-size: 15px;
+        }
+
+        .submit-btn {
+            padding: 14px;
+            font-size: 17px;
         }
         
         .google-login-btn {
-            padding: 10px 15px;
+            padding: 11px 18px;
             font-size: 14px;
         }
         
         .google-icon {
             width: 18px;
             height: 18px;
+        }
+
+        .contact-admin-link {
+            font-size: 13px;
+            margin-top: 18px;
+        }
+
+        .divider {
+            margin: 20px 0;
+        }
+    }
+
+    /* Responsive - Mobile Small */
+    @media (max-width: 360px) {
+        body {
+            padding: 10px;
+        }
+
+        .login-container {
+            padding: 25px 20px;
+        }
+
+        .logo img {
+            width: 75px;
+            height: 75px;
+        }
+
+        .residence-name {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            padding: 12px 16px;
+            font-size: 14px;
+        }
+
+        .submit-btn {
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        .google-login-btn {
+            padding: 10px 15px;
+            font-size: 13px;
+        }
+
+        .contact-admin-link {
+            font-size: 12px;
+        }
+    }
+
+    /* Fix untuk sangat kecil */
+    @media (max-width: 320px) {
+        .login-container {
+            padding: 20px 15px;
+        }
+
+        .input-group input {
+            padding: 11px 14px;
+            font-size: 13px;
         }
     }
 </style>

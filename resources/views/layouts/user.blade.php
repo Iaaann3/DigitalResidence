@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'PP8B')</title>
+    <title>@yield('title', 'Digital Residence')</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -69,7 +69,7 @@
         .transition-overlay {
             position: fixed;
             inset: 0;
-            background: linear-gradient(135deg, #1a5f3f 0%, #0d2818 50%, #1a5f3f 100%);
+            background: linear-gradient(135deg, #172e67 0%, #2d7087 50%, #358ade 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -244,12 +244,12 @@
         <div class="transition-logo-container">
             <div class="transition-logo">
                 <!-- PP8B Logo Image -->
-                <img src="{{ asset('assets/images/carossel/pesona1.png') }}" alt="PP8B Logo" class="logo-image">
+                <img src="{{ asset('assets/images/logos/digital.png') }}" alt="Digital Residence Logo" class="logo-image">
             </div>
             
             <div class="transition-text">
-                <div class="brand-name">PESONA PRIMA 8</div>
-                <div class="brand-subtitle">BANJARAN</div>
+                <div class="brand-name">DIGITAL RESIDENCE</div>
+                <div class="brand-subtitle">The Future of Residential Living</div>
             </div>
 
             <div class="loading-spinner">

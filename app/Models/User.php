@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -18,6 +19,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+    protected $appends = ['profile_photo_url'];
     protected $fillable = [
         'name',
         'no_rumah',
@@ -27,6 +29,8 @@ class User extends Authenticatable
         'password',
         'google_id',
         'role',
+        'profile_photo_path',
+        'password'
     ];
 
     /**
@@ -59,6 +63,16 @@ class User extends Authenticatable
         return $this->hasMany(Iklan::class, 'id_user');
     }
 
+    public function getProfilePhotoUrlAttribute()
+    {
+        if ($this->profile_photo_path) {
+            return Storage::url($this->profile_photo_path);
+        }
+
+        // fallback ke UI Avatars kalau belum ada foto
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name ?? 'User') . '&background=2563eb&color=fff&size=128';
+    }
+
 
     // Relasi ke tabel kritik
     public function kritikSaran()
@@ -77,8 +91,9 @@ class User extends Authenticatable
         return $this->hasMany(Dibayar::class, 'id_user');
     }
 
-
-
-
+        public function keluhans()
+    {
+        return $this->hasMany(Keluhan::class);
+    }
 
 }
