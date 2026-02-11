@@ -9,7 +9,7 @@
   <link rel="shortcut icon" type="image/png" href="{{ asset('assets/images/logos/digital1.png') }}" />
   <link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}" />
 
-  <title>PP8B</title>
+  <title>Digital Residence</title>
   <link rel="stylesheet" href="{{ asset('assets/libs/owl.carousel/dist/assets/owl.carousel.min.css') }}" />
 </head>
 

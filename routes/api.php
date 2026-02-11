@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\UserKegiatanController;
 use App\Http\Controllers\Api\UserSaranController;  
 use App\Http\Controllers\Api\UserProfileController;
 use App\Http\Controllers\Api\UserPembayaranController;
+use App\Http\Controllers\Api\UserKeluhanController;
 
 // login & logout
 Route::post('/login', [UserController::class, 'login']);
@@ -33,6 +34,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/saran', [UserSaranController::class, 'index']);
     Route::post('/saran', [UserSaranController::class, 'store']);
+
+    Route::get('/keluhan', [UserKeluhanController::class, 'index']);               // daftar keluhan
+    Route::post('/keluhan', [UserKeluhanController::class, 'store']);             // kirim keluhan
+    Route::get('/keluhan/replies', [UserKeluhanController::class, 'replies']);      // semua balasan
+    Route::get('/keluhan/{keluhan_id}/replies', [UserKeluhanController::class, 'showReplies']);
 });
 
 

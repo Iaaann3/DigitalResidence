@@ -273,7 +273,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Script detail keluhan ADMIN dengan riwayat');
+    console.log('Script detail keluhan ADMIN dengan riwayat - FIXED VERSION');
 
     const form = document.getElementById('replyForm');
     const submitBtn = document.getElementById('submitBtn');
@@ -282,12 +282,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const photoInput = document.getElementById('photoInput');
 
     let uploadedFiles = [];
+    let fileCounter = 0;
 
     // Pastikan elemen ada
     if (!dropzoneDiv || !photoInput || !preview) {
         console.error('Elemen tidak ditemukan!');
         return;
     }
+
+    // Reset form ketika halaman load
+    form.reset();
+    uploadedFiles = [];
+    preview.innerHTML = '';
+    preview.style.display = 'none';
+    photoInput.value = ''; // Reset input file
 
     // Klik dropzone
     dropzoneDiv.addEventListener('click', function(e) {
@@ -320,68 +328,157 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function processFiles(files) {
+        if (!files || files.length === 0) {
+            console.log('Tidak ada file yang dipilih');
+            return;
+        }
+
+        console.log('Memproses file:', files.length, 'file');
+
         const validFiles = Array.from(files).filter(file => {
             if (!file.type.startsWith('image/')) {
+                console.warn('File bukan gambar:', file.name, file.type);
                 return false;
             }
             if (file.size > 2 * 1024 * 1024) {
+                console.warn('File terlalu besar:', file.name, file.size);
                 return false;
             }
             return true;
         });
 
         if (validFiles.length !== files.length) {
-            alert('Hanya file gambar JPG/PNG/GIF maksimal 2MB!');
+            alert('❌ Hanya file gambar JPG/PNG/GIF maksimal 2MB yang diperbolehkan!');
         }
 
         if (uploadedFiles.length + validFiles.length > 10) {
-            alert('Maksimal 10 foto total!');
+            alert('❌ Maksimal 10 foto total! Anda sudah memiliki ' + uploadedFiles.length + ' foto.');
             return;
         }
 
         validFiles.forEach((file, index) => {
+            // Cek apakah file sudah ada di array
+            const isDuplicate = uploadedFiles.some(existingFile => 
+                existingFile.name === file.name && 
+                existingFile.size === file.size &&
+                existingFile.lastModified === file.lastModified
+            );
+
+            if (isDuplicate) {
+                console.warn('File duplikat ditemukan:', file.name);
+                alert('⚠️ File "' + file.name + '" sudah dipilih sebelumnya!');
+                return;
+            }
+
+            // Beri ID unik untuk setiap file
+            file.uniqueId = 'file-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
             uploadedFiles.push(file);
-            
+            fileCounter++;
+
+            console.log('Menambahkan file ke uploadedFiles:', file.name, 'ID:', file.uniqueId);
+
             const reader = new FileReader();
             reader.onload = function(e) {
                 const col = document.createElement('div');
                 col.className = 'col-3 position-relative mb-2';
+                col.id = 'preview-' + file.uniqueId;
                 col.innerHTML = `
                     <img src="${e.target.result}" class="img-thumbnail rounded" style="width:100%; height:80px; object-fit:cover;" alt="${file.name}">
-                    <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 rounded-circle" onclick="removePhoto(${uploadedFiles.length - 1})" style="width:20px; height:20px; font-size:10px; margin:2px;">×</button>
+                    <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 rounded-circle" onclick="removePhotoById('${file.uniqueId}')" style="width:20px; height:20px; font-size:10px; margin:2px;">×</button>
                     <small class="text-center d-block mt-1" style="font-size: 10px;">${file.name.length > 15 ? file.name.substring(0, 12) + '...' : file.name}</small>
                 `;
                 preview.appendChild(col);
             };
+            reader.onerror = function(e) {
+                console.error('Error membaca file:', file.name, e);
+            };
             reader.readAsDataURL(file);
         });
+
+        // RESET PENTING: Kosongkan input file setelah proses
+        photoInput.value = '';
 
         if (uploadedFiles.length > 0) {
             preview.style.display = 'flex';
             preview.classList.add('flex-wrap');
         }
+        
+        console.log('Total file yang sudah diupload:', uploadedFiles.length);
     }
 
+    // Fungsi remove dengan ID
+    window.removePhotoById = function(uniqueId) {
+        console.log('Menghapus file dengan ID:', uniqueId);
+        
+        // Hapus dari array uploadedFiles
+        const index = uploadedFiles.findIndex(file => file.uniqueId === uniqueId);
+        if (index !== -1) {
+            uploadedFiles.splice(index, 1);
+            console.log('File dihapus dari array, sisa:', uploadedFiles.length);
+        }
+        
+        // Hapus preview dari DOM
+        const previewElement = document.getElementById('preview-' + uniqueId);
+        if (previewElement) {
+            previewElement.remove();
+        }
+        
+        // Sembunyikan preview jika kosong
+        if (preview.children.length === 0) {
+            preview.style.display = 'none';
+        }
+    };
+
+    // Fungsi remove dengan index (untuk kompatibilitas)
     window.removePhoto = function(index) {
-        uploadedFiles.splice(index, 1);
-        const cols = preview.querySelectorAll('div');
-        if (cols[index]) cols[index].remove();
-        if (preview.children.length === 0) preview.style.display = 'none';
+        if (index >= 0 && index < uploadedFiles.length) {
+            const file = uploadedFiles[index];
+            removePhotoById(file.uniqueId);
+        }
     };
 
     // Tangani submit form
     submitBtn.addEventListener('click', function(e) {
         e.preventDefault();
+        e.stopPropagation();
+
+        console.log('=== MEMULAI PROSES KIRIM BALASAN ===');
+        console.log('Jumlah file di uploadedFiles:', uploadedFiles.length);
 
         const pesan = document.getElementById('pesan').value.trim();
         if (!pesan) {
-            alert('Pesan balasan wajib diisi!');
+            alert('❌ Pesan balasan wajib diisi!');
             return;
         }
 
-        const formData = new FormData(form);
-        uploadedFiles.forEach((file, index) => {
-            formData.append('photos[]', file);
+        // Validasi file unik sebelum submit
+        const uniqueFiles = [];
+        const seenFiles = new Set();
+        
+        uploadedFiles.forEach(file => {
+            const fileKey = file.name + '_' + file.size + '_' + file.lastModified;
+            if (!seenFiles.has(fileKey)) {
+                seenFiles.add(fileKey);
+                uniqueFiles.push(file);
+            } else {
+                console.warn('File duplikat ditemukan sebelum submit:', file.name);
+            }
+        });
+
+        console.log('File unik yang akan dikirim:', uniqueFiles.length);
+
+        // Buat FormData baru
+        const formData = new FormData();
+        
+        // Tambahkan data form
+        formData.append('_token', '{{ csrf_token() }}');
+        formData.append('keluhan_id', '{{ $keluhan->id }}');
+        formData.append('pesan', pesan);
+        
+        // Hanya tambahkan file unik
+        uniqueFiles.forEach((file, index) => {
+            formData.append('photos[]', file, file.name);
+            console.log(`Menambahkan file ${index + 1}: ${file.name} (${file.size} bytes)`);
         });
 
         const originalBtnText = submitBtn.innerHTML;
@@ -397,39 +494,65 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .then(response => {
+            console.log('Status response:', response.status);
+            
             if (!response.ok) {
-                return response.json().then(err => { throw err; });
+                return response.text().then(text => {
+                    console.error('Response error:', text);
+                    try {
+                        const err = JSON.parse(text);
+                        throw err;
+                    } catch (e) {
+                        throw new Error(text || 'Error tidak diketahui');
+                    }
+                });
             }
             return response.json();
         })
         .then(data => {
-            console.log('Response data:', data);
+            console.log('Response data dari server:', data);
+            
             if (data.success) {
-                alert(data.message || 'Balasan berhasil dikirim!');
+                alert('✅ ' + (data.message || 'Balasan berhasil dikirim!'));
+                
+                // Reset semua
                 form.reset();
                 uploadedFiles = [];
                 preview.innerHTML = '';
                 preview.style.display = 'none';
+                fileCounter = 0;
+                photoInput.value = ''; // Reset input file
+                
+                // Clear preview
+                console.log('Form berhasil direset');
                 
                 // Reload halaman untuk update riwayat
                 setTimeout(() => {
                     location.reload();
-                }, 1000);
+                }, 1500);
                 
             } else {
-                alert(data.message || 'Error mengirim!');
+                alert('❌ ' + (data.message || 'Error mengirim!'));
             }
         })
         .catch(error => {
-            console.error('Submit Error:', error);
-            let msg = 'Error mengirim balasan.';
-            if (error.message) msg += ' Detail: ' + error.message;
-            if (error.errors) msg += ' Validasi: ' + Object.values(error.errors)[0][0];
+            console.error('Submit Error Detail:', error);
+            let msg = '❌ Error mengirim balasan.';
+            
+            if (error.message) {
+                msg += '\nDetail: ' + error.message;
+            }
+            
+            if (error.errors) {
+                msg += '\nValidasi: ' + Object.values(error.errors)[0][0];
+            }
+            
             alert(msg);
         })
         .finally(() => {
             submitBtn.innerHTML = originalBtnText;
             submitBtn.disabled = false;
+            console.log('Proses selesai');
         });
     });
 });
