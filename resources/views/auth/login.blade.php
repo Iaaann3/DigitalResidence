@@ -14,7 +14,7 @@
                 <circle class="ring-spin"  cx="50" cy="50" r="42"/>
             </svg>
         </div>
-        <p class="login-overlay__text">Loading..<span>.</span><span>.</span><span>.</span></p>
+        <p class="login-overlay__text">Sedang masuk<span>.</span><span>.</span><span>.</span></p>
     </div>
 </div>
 
@@ -116,22 +116,20 @@
         position: relative;
     }
 
-    /* Logo di tengah ring */
+    /* Logo di tengah ring — overlap ke atas ring */
     .login-overlay__logo {
         width: 72px;
         height: 72px;
         border-radius: 50%;
         object-fit: cover;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, calc(-50% - 22px));
+        position: relative;
         z-index: 2;
+        margin-bottom: -106px; /* tarik ke bawah masuk ke tengah ring (140/2 - 72/2 = 34px, plus ring margin) */
         animation: overlayLogoPulse 1.8s ease-in-out infinite;
     }
     @keyframes overlayLogoPulse {
-        0%, 100% { transform: translate(-50%, calc(-50% - 22px)) scale(1); }
-        50%       { transform: translate(-50%, calc(-50% - 22px)) scale(1.07); }
+        0%, 100% { transform: scale(1); }
+        50%       { transform: scale(1.07); }
     }
 
     /* SVG spinner ring */
@@ -275,7 +273,7 @@
         .contact-admin-link { font-size: 13px; margin-top: 18px; }
         .divider { margin: 20px 0; }
         .login-overlay__ring { width: 120px; height: 120px; }
-        .login-overlay__logo { width: 60px; height: 60px; }
+        .login-overlay__logo { width: 60px; height: 60px; margin-bottom: -90px; }
     }
     @media (max-width: 360px) {
         body { padding: 10px; }
@@ -343,8 +341,14 @@
                     requestAnimationFrame(function () {
                         overlay.classList.add('active');
                         setTimeout(function () {
-                            window.location.href = data.redirect_url;
-                        }, 1200); /* overlay keliatan ~1.2 detik */
+                            /* Sembunyikan overlay sebelum redirect
+                               biar browser tidak cache state overlay = visible */
+                            overlay.classList.remove('active');
+                            overlay.style.opacity = '0';
+                            setTimeout(function () {
+                                window.location.href = data.redirect_url;
+                            }, 300);
+                        }, 1000); /* overlay keliatan ~1 detik */
                     });
                 });
             } else {
