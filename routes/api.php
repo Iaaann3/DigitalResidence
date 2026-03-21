@@ -30,7 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/kegiatan', [UserKegiatanController::class, 'index']);
     Route::get('/kegiatan/{id}', [UserKegiatanController::class, 'show']);
 
-    Route::get('/my-profile', [UserProfileController::class, 'index']);
+    Route::get('/profile', [UserProfileController::class, 'index']);
 
     Route::get('/saran', [UserSaranController::class, 'index']);
     Route::post('/saran', [UserSaranController::class, 'store']);

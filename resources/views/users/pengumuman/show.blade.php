@@ -1,226 +1,351 @@
 @extends('layouts.user')
 
 @section('content')
+
 <style>
-    /* Background dan body styling */
-    body {
-        background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 50%, #e6f3ff 100%);
-        min-height: 100vh;
-        position: relative;
-        overflow-x: hidden;
-    }
+body { background: #F5F7FA; }
 
-    /* Floating background shapes */
-    .floating-shapes { 
-        position: fixed; 
-        width: 100%; 
-        height: 100%; 
-        overflow: hidden; 
-        z-index: 1; 
-        top: 0;
-        left: 0;
-        pointer-events: none;
-    }
-    
-    .shape { 
-        position: absolute; 
-        animation: float 8s ease-in-out infinite; 
-        opacity: 0.6;
-        will-change: transform;
-    }
-    
-    .shape-1 { top: 10%; left: 15%; width: 50px; height: 50px; background: linear-gradient(45deg, #ff9a9e, #fecfef); border-radius: 50% 20% 50% 20%; animation-delay: 0s; }
-    .shape-2 { top: 20%; right: 10%; width: 45px; height: 45px; background: linear-gradient(45deg, #a8edea, #fed6e3); border-radius: 20% 50% 20% 50%; animation-delay: 2s; }
-    .shape-3 { bottom: 15%; left: 10%; width: 40px; height: 40px; background: linear-gradient(45deg, #d299c2, #fef9d7); border-radius: 50%; animation-delay: 4s; }
-    .shape-4 { top: 50%; right: 20%; width: 35px; height: 35px; background: linear-gradient(45deg, #89f7fe, #66a6ff); border-radius: 20%; animation-delay: 1s; }
-    .shape-5 { bottom: 30%; right: 5%; width: 30px; height: 30px; background: linear-gradient(45deg, #ffecd2, #fcb69f); border-radius: 50%; animation-delay: 3s; }
-    .shape-6 { top: 35%; left: 5%; width: 38px; height: 38px; background: linear-gradient(45deg, #a8c8ec, #7faaff); border-radius: 30% 70% 30% 70%; animation-delay: 1.5s; }
-    .shape-7 { top: 75%; left: 25%; width: 42px; height: 42px; background: linear-gradient(45deg, #ffc3a0, #ffab7d); border-radius: 40% 60% 40% 60%; animation-delay: 2.5s; }
-    .shape-8 { bottom: 50%; right: 35%; width: 32px; height: 32px; background: linear-gradient(45deg, #c3a8ff, #b399f5); border-radius: 50%; animation-delay: 3.5s; }
-    
-    @keyframes float { 
-        0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); opacity: 0.6; } 
-        25% { transform: translateY(-20px) rotate(90deg) scale(1.1); opacity: 0.8; } 
-        50% { transform: translateY(-15px) rotate(180deg) scale(0.9); opacity: 0.4; } 
-        75% { transform: translateY(-25px) rotate(270deg) scale(1.05); opacity: 0.7; } 
-    }
+.pgm-show {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 36px 24px 100px;
+}
 
-    /* Content wrapper */
-    .content-wrapper {
-        position: relative;
-        z-index: 10;
-        min-height: 100vh;
-        padding: 40px 0;
-    }
+/* ── Back nav ─────────────────────────────────────────── */
+.pgm-show__back-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    animation: showUp .35s ease both;
+}
+.pgm-show__back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .78rem;
+    font-weight: 700;
+    color: #6B7280;
+    text-decoration: none;
+    letter-spacing: .04em;
+    transition: color .2s, gap .2s;
+}
+.pgm-show__back-btn:hover { color: #283fa7; gap: 12px; text-decoration: none; }
+.pgm-show__back-btn i { font-size: .7rem; }
+.pgm-show__breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .72rem;
+    color: #C4C9D4;
+}
+.pgm-show__breadcrumb a {
+    color: #C4C9D4;
+    text-decoration: none;
+    transition: color .15s;
+}
+.pgm-show__breadcrumb a:hover { color: #2839a7; }
+.pgm-show__breadcrumb i { font-size: .55rem; }
 
-    /* Main container */
-    .detail-container {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 1rem;
-        animation: slideInUp 1s ease-out;
-    }
+/* ── Article card ─────────────────────────────────────── */
+.pgm-show__card {
+    background: white;
+    border-radius: 18px;
+    border: 1.5px solid #F0F0F0;
+    overflow: hidden;
+    animation: showUp .4s ease .05s both;
+}
 
-    .detail-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 24px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-        padding: 2rem;
-        overflow: hidden;
-        animation: fadeInScale 1.2s ease-out;
-    }
+/* Meta strip */
+.pgm-show__meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 24px 32px 0;
+    margin-bottom: 14px;
+}
+.pgm-show__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    background: #ECFDF5;
+    color: #052e96;
+    padding: 4px 11px;
+    border-radius: 100px;
+}
+.pgm-show__meta-sep { width: 3px; height: 3px; border-radius: 50%; background: #D1D5DB; }
+.pgm-show__meta-info {
+    font-size: .75rem;
+    color: #9CA3AF;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.pgm-show__meta-info i { font-size: .65rem; color: #2839a7; }
 
-    .detail-title {
-        font-size: 2rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, #1f2937, #4f46e5);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 1.5rem;
-    }
+/* Title */
+.pgm-show__title {
+    font-size: clamp(1.3rem, 3vw, 1.75rem);
+    font-weight: 800;
+    color: #0F172A;
+    letter-spacing: -.025em;
+    line-height: 1.25;
+    padding: 0 32px;
+    margin-bottom: 24px;
+}
 
-    .image-container {
-        margin-bottom: 1.5rem;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-    }
+/* Image */
+.pgm-show__img-wrap {
+    position: relative;
+    overflow: hidden;
+    background: #F0F0F0;
+}
+.pgm-show__img-wrap img {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    display: block;
+    transition: transform .6s ease;
+}
+.pgm-show__img-wrap:hover img { transform: scale(1.02); }
+.pgm-show__img-wrap::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #283da7, #202ec9);
+}
 
-    .detail-image {
-        width: 100%;
-        height: 350px;
-        object-fit: cover;
-        transition: transform 0.6s ease, filter 0.6s ease;
-        border-radius: 16px;
-    }
+/* Body */
+.pgm-show__body-wrap {
+    padding: 28px 32px 24px;
+}
 
-    .image-container:hover .detail-image {
-        transform: scale(1.05);
-        filter: brightness(1.1) saturate(1.2);
-    }
+/* Divider */
+.pgm-show__divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+}
+.pgm-show__divider-line { flex: 1; height: 1px; background: #F0F0F0; }
+.pgm-show__divider-dot  { width: 5px; height: 5px; border-radius: 50%; background: #282ea7; flex-shrink: 0; }
 
-    .description-text {
-        font-size: 1rem;
-        color: #374151;
-        line-height: 1.6;
-        margin-bottom: 1.5rem;
-        text-align: justify;
-    }
+/* Article text */
+.pgm-show__body {
+    font-size: .95rem;
+    color: #374151;
+    line-height: 1.9;
+    margin-bottom: 28px;
+}
 
-    .info-section {
-        background: #f9fafb;
-        border-radius: 12px;
-        padding: 1rem;
-        margin-bottom: 1.5rem;
-    }
+/* Info row */
+.pgm-show__info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 0;
+}
+@media (max-width: 520px) { .pgm-show__info-row { grid-template-columns: 1fr; } }
 
-    .info-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 1rem;
-        color: #4b5563;
-        margin-bottom: 0.5rem;
-    }
+.pgm-show__info-card {
+    background: #F8FAF8;
+    border: 1.5px solid #EBEBEB;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: border-color .2s;
+}
+.pgm-show__info-card:hover { border-color: #C8ECD1; }
+.pgm-show__info-icon {
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    background: #ECFDF5;
+    color: #2848a7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .78rem;
+    flex-shrink: 0;
+}
+.pgm-show__info-label {
+    font-size: .62rem;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: #9CA3AF;
+    margin-bottom: 2px;
+}
+.pgm-show__info-val {
+    font-size: .83rem;
+    font-weight: 700;
+    color: #1F2937;
+    line-height: 1.3;
+}
 
-    .back-button {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 12px 20px;
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
-        color: white;
-        font-weight: 600;
-        border-radius: 50px;
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
+/* Footer */
+.pgm-show__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1.5px solid #F3F4F6;
+    padding: 16px 32px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.pgm-show__footer-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ECFDF5;
+    color: #2833a7;
+    border: 1.5px solid #C8ECD1;
+    border-radius: 9px;
+    padding: 10px 18px;
+    font-size: .82rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background .2s, color .2s, transform .15s;
+}
+.pgm-show__footer-back:hover {
+    background: #283ba7;
+    color: white;
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+.pgm-show__footer-note {
+    font-size: .7rem;
+    color: #C4C9D4;
+    letter-spacing: .04em;
+}
 
-    .back-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
-    }
+/* ── Responsive ──────────────────────────────────────── */
+@media (max-width: 600px) {
+    .pgm-show { padding: 20px 12px 80px; }
+    .pgm-show__meta, .pgm-show__title { padding-left: 20px; padding-right: 20px; }
+    .pgm-show__body-wrap { padding: 20px 20px 18px; }
+    .pgm-show__footer { padding: 14px 20px; }
+    .pgm-show__img-wrap img { height: 220px; }
+    .pgm-show__footer-back { width: 100%; justify-content: center; }
+    .pgm-show__breadcrumb { display: none; }
+}
 
-    /* Responsive */
-    @media (max-width: 768px) {
-        .detail-card { padding: 1.5rem; }
-        .detail-title { font-size: 1.6rem; }
-        .detail-image { height: 220px; }
-        .description-text { font-size: 0.95rem; }
-        .back-button { padding: 10px 16px; font-size: 0.9rem; }
-        .shape { opacity: 0.3; width: 20px !important; height: 20px !important; }
-    }
-
-    @media (max-width: 480px) {
-        .detail-title { font-size: 1.4rem; }
-        .detail-image { height: 180px; }
-        .description-text { font-size: 0.9rem; }
-        .back-button { width: 100%; justify-content: center; }
-    }
-
-    /* Animations */
-    @keyframes slideInUp { from {opacity:0;transform:translateY(40px);} to {opacity:1;transform:translateY(0);} }
-    @keyframes fadeInScale { from {opacity:0;transform:scale(0.95);} to {opacity:1;transform:scale(1);} }
+/* ── Keyframes ───────────────────────────────────────── */
+@keyframes showUp {
+    from { opacity:0; transform:translateY(16px); }
+    to   { opacity:1; transform:translateY(0); }
+}
 </style>
 
-<div class="floating-shapes">
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
-    <div class="shape shape-3"></div>
-    <div class="shape shape-4"></div>
-    <div class="shape shape-5"></div>
-    <div class="shape shape-6"></div>
-    <div class="shape shape-7"></div>
-    <div class="shape shape-8"></div>
-</div>
+<div class="pgm-show">
 
-<div class="content-wrapper">
-    <div class="detail-container">
-        <div class="detail-card">
-            <h1 class="detail-title">📢 Detail Pengumuman</h1>
-
-            @if($pengumuman->gambar)
-                <div class="image-container">
-                    <img src="{{ asset('storage/'.$pengumuman->gambar) }}" alt="{{ $pengumuman->judul }}" class="detail-image">
-                </div>
-            @endif
-
-            <h2 class="text-xl font-semibold text-gray-900 mb-3">
-                {{ ucfirst($pengumuman->judul) }}
-            </h2>
-
-            <div class="description-text">
-                {{ $pengumuman->isi }}
-            </div>
-
-            <div class="info-section">
-                <div class="info-item">
-                    <span>📅 {{ \Carbon\Carbon::parse($pengumuman->tanggal)->translatedFormat('d F Y') }}</span>
-                </div>
-            </div>
-
-            <a href="{{ route('user.pengumuman.index') }}" class="back-button">
-                Kembali ke Daftar
-            </a>
+    {{-- Back nav + breadcrumb --}}
+    <div class="pgm-show__back-nav">
+        <a href="{{ route('user.pengumuman.index') }}" class="pgm-show__back-btn">
+            <i class="fas fa-arrow-left"></i> Semua Pengumuman
+        </a>
+        <div class="pgm-show__breadcrumb">
+            <a href="{{ route('user.home.index') }}">Beranda</a>
+            <i class="fas fa-chevron-right"></i>
+            <a href="{{ route('user.pengumuman.index') }}">Pengumuman</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>{{ Str::limit($pengumuman->judul ?? 'Detail', 32) }}</span>
         </div>
     </div>
+
+    {{-- Article card --}}
+    <div class="pgm-show__card">
+
+        {{-- Meta --}}
+        <div class="pgm-show__meta">
+            <span class="pgm-show__tag">
+                <i class="fas fa-bullhorn"></i> Pengumuman
+            </span>
+            <span class="pgm-show__meta-sep"></span>
+            <span class="pgm-show__meta-info">
+                <i class="fas fa-calendar-alt"></i>
+                {{ isset($pengumuman->tanggal)
+                    ? \Carbon\Carbon::parse($pengumuman->tanggal)->translatedFormat('d F Y')
+                    : \Carbon\Carbon::parse($pengumuman->created_at)->translatedFormat('d F Y') }}
+            </span>
+            <span class="pgm-show__meta-sep"></span>
+            <span class="pgm-show__meta-info">
+                <i class="fas fa-user"></i>
+                {{ $pengumuman->author ?? 'Admin' }}
+            </span>
+        </div>
+
+        {{-- Title --}}
+        <h1 class="pgm-show__title">
+            {{ ucfirst($pengumuman->judul ?? 'Judul Pengumuman') }}
+        </h1>
+
+        {{-- Image --}}
+        @if($pengumuman->gambar)
+        <div class="pgm-show__img-wrap">
+            <img src="{{ asset('storage/'.$pengumuman->gambar) }}"
+                 alt="{{ $pengumuman->judul }}">
+        </div>
+        @endif
+
+        {{-- Body --}}
+        <div class="pgm-show__body-wrap">
+
+            <div class="pgm-show__divider">
+                <div class="pgm-show__divider-line"></div>
+                <div class="pgm-show__divider-dot"></div>
+                <div class="pgm-show__divider-line"></div>
+            </div>
+
+            <div class="pgm-show__body">
+                {{ $pengumuman->isi ?? 'Konten pengumuman tidak tersedia.' }}
+            </div>
+
+            {{-- Info cards --}}
+            <div class="pgm-show__info-row">
+                <div class="pgm-show__info-card">
+                    <div class="pgm-show__info-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div>
+                        <div class="pgm-show__info-label">Tanggal</div>
+                        <div class="pgm-show__info-val">
+                            {{ isset($pengumuman->tanggal)
+                                ? \Carbon\Carbon::parse($pengumuman->tanggal)->translatedFormat('d F Y')
+                                : \Carbon\Carbon::parse($pengumuman->created_at)->translatedFormat('d F Y') }}
+                        </div>
+                    </div>
+                </div>
+                <div class="pgm-show__info-card">
+                    <div class="pgm-show__info-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div>
+                        <div class="pgm-show__info-label">Lingkungan</div>
+                        <div class="pgm-show__info-val">Digital Residence</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        {{-- Footer --}}
+        <div class="pgm-show__footer">
+            <a href="{{ route('user.pengumuman.index') }}" class="pgm-show__footer-back">
+                <i class="fas fa-arrow-left"></i> Kembali ke Daftar
+            </a>
+            <span class="pgm-show__footer-note">Digital Residence</span>
+        </div>
+
+    </div>
+
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const shapes = document.querySelectorAll('.shape');
-    document.addEventListener('mousemove', function(e) {
-        const mouseX = e.clientX / window.innerWidth;
-        const mouseY = e.clientY / window.innerHeight;
-        shapes.forEach((shape, index) => {
-            const speed = (index + 1) * 0.2;
-            const x = (mouseX - 0.5) * speed * 30;
-            const y = (mouseY - 0.5) * speed * 30;
-            shape.style.transform = `translate(${x}px, ${y}px)`;
-        });
-    });
-});
-</script>
 @endsection

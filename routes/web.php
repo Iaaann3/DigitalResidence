@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BiayaSettingController;
 use App\Http\Controllers\IklanController;
 use App\Http\Controllers\KegiatanController;
+use App\Http\Controllers\KeluhanController;
 use App\Http\Controllers\KritikSaranController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\PengumumanController;
@@ -18,9 +19,6 @@ use App\Http\Controllers\UserPembayaranController;
 use App\Http\Controllers\UserPengumumanController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\UserSaranController;
-use App\Http\Controllers\KeluhanController;
-
-
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -139,16 +137,19 @@ Route::group([
     // Edit Profile Routes
     Route::get('/profile/edit', [UserProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile/update', [UserProfileController::class, 'update'])->name('profile.update');
-    
 
     // Kritik & Saran
     Route::get('/kritik-saran', [UserSaranController::class, 'index'])->name('saran.index');
     Route::post('/kritik-saran', [UserSaranController::class, 'store'])->name('saran.store');
 
     // Keluhan
-    Route::get('/keluhan', [UserKeluhanController::class, 'index'])->name('keluhan.index'); 
+    Route::get('/keluhan', [UserKeluhanController::class, 'index'])->name('keluhan.index');
     Route::get('/keluhan/create', [UserKeluhanController::class, 'create'])->name('keluhan.create');
     Route::post('/keluhan', [UserKeluhanController::class, 'store'])->name('keluhan.store');
     Route::get('/keluhan/{keluhan}', [UserKeluhanController::class, 'show'])->name('keluhan.show');
     Route::delete('/keluhan/{keluhan}', [UserKeluhanController::class, 'destroy'])->name('keluhan.destroy');
+
+    Route::get('/error/coming-soon', function () {
+        return view('error.coming-soon');
+    })->name('error.coming-soon');
 });

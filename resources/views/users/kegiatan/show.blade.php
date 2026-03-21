@@ -1,224 +1,315 @@
 @extends('layouts.user')
+
 @section('content')
+
 <style>
-    /* Background dan body styling */
-    body {
-        background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 50%, #e6f3ff 100%);
-        min-height: 100vh;
-        position: relative;
-        overflow-x: hidden;
-    }
+/* ── Base ─────────────────────────────────────────────── */
+body { background: #F7F8FC; }
 
-    /* Floating background shapes */
-    .floating-shapes { 
-        position: fixed; 
-        width: 100%; 
-        height: 100%; 
-        overflow: hidden; 
-        z-index: 1; 
-        top: 0;
-        left: 0;
-        pointer-events: none;
-    }
-    
-    .shape { 
-        position: absolute; 
-        animation: float 8s ease-in-out infinite; 
-        opacity: 0.6;
-        will-change: transform;
-    }
-    
-    .shape-1 { top: 10%; left: 15%; width: 50px; height: 50px; background: linear-gradient(45deg, #ff9a9e, #fecfef); border-radius: 50% 20% 50% 20%; animation-delay: 0s; }
-    .shape-2 { top: 20%; right: 10%; width: 45px; height: 45px; background: linear-gradient(45deg, #a8edea, #fed6e3); border-radius: 20% 50% 20% 50%; animation-delay: 2s; }
-    .shape-3 { bottom: 15%; left: 10%; width: 40px; height: 40px; background: linear-gradient(45deg, #d299c2, #fef9d7); border-radius: 50%; animation-delay: 4s; }
-    .shape-4 { top: 50%; right: 20%; width: 35px; height: 35px; background: linear-gradient(45deg, #89f7fe, #66a6ff); border-radius: 20%; animation-delay: 1s; }
-    .shape-5 { bottom: 30%; right: 5%; width: 30px; height: 30px; background: linear-gradient(45deg, #ffecd2, #fcb69f); border-radius: 50%; animation-delay: 3s; }
-    .shape-6 { top: 35%; left: 5%; width: 38px; height: 38px; background: linear-gradient(45deg, #a8c8ec, #7faaff); border-radius: 30% 70% 30% 70%; animation-delay: 1.5s; }
-    .shape-7 { top: 75%; left: 25%; width: 42px; height: 42px; background: linear-gradient(45deg, #ffc3a0, #ffab7d); border-radius: 40% 60% 40% 60%; animation-delay: 2.5s; }
-    .shape-8 { bottom: 50%; right: 35%; width: 32px; height: 32px; background: linear-gradient(45deg, #c3a8ff, #b399f5); border-radius: 50%; animation-delay: 3.5s; }
-    
-    @keyframes float { 
-        0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); opacity: 0.6; } 
-        25% { transform: translateY(-20px) rotate(90deg) scale(1.1); opacity: 0.8; } 
-        50% { transform: translateY(-15px) rotate(180deg) scale(0.9); opacity: 0.4; } 
-        75% { transform: translateY(-25px) rotate(270deg) scale(1.05); opacity: 0.7; } 
-    }
+.kg-show {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 36px 20px 100px;
+}
 
-    /* Content wrapper */
-    .content-wrapper {
-        position: relative;
-        z-index: 10;
-        min-height: 100vh;
-        padding: 40px 0;
-    }
+/* ── Back nav ─────────────────────────────────────────── */
+.kg-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #6B7280;
+    text-decoration: none;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    transition: color .2s, gap .2s;
+    animation: kgUp .4s ease both;
+}
+.kg-back:hover { color: #1a73e8; gap: 12px; text-decoration: none; }
+.kg-back i { font-size: .75rem; }
 
-    /* Main container */
-    .detail-container {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 1rem;
-        animation: slideInUp 1s ease-out;
-    }
+/* ── Meta bar ─────────────────────────────────────────── */
+.kg-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+    animation: kgUp .4s ease .05s both;
+}
+.kg-tag {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 100px;
+    background: #EBF3FE;
+    color: #1a73e8;
+}
+.kg-meta-date, .kg-meta-loc {
+    font-size: .78rem;
+    color: #9CA3AF;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.kg-meta-date i, .kg-meta-loc i { color: #1a73e8; font-size: .7rem; }
+.kg-meta-sep {
+    width: 3px; height: 3px;
+    background: #D1D5DB;
+    border-radius: 50%;
+}
 
-    .detail-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 24px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-        padding: 2rem;
-        overflow: hidden;
-        animation: fadeInScale 1.2s ease-out;
-    }
+/* ── Title ────────────────────────────────────────────── */
+.kg-title {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 800;
+    color: #0F172A;
+    line-height: 1.25;
+    letter-spacing: -.025em;
+    margin-bottom: 24px;
+    animation: kgUp .4s ease .1s both;
+}
 
-    .detail-title {
-        font-size: 2rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, #1f2937, #4f46e5);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 1.5rem;
-    }
+/* ── Image ────────────────────────────────────────────── */
+.kg-img-wrap {
+    border-radius: 18px;
+    overflow: hidden;
+    margin-bottom: 32px;
+    animation: kgUp .5s ease .15s both;
+    position: relative;
+    background: #E5E7EB;
+}
+.kg-img-wrap img {
+    width: 100%;
+    height: 340px;
+    object-fit: cover;
+    display: block;
+    transition: transform .6s ease;
+}
+.kg-img-wrap:hover img { transform: scale(1.03); }
 
-    .image-container {
-        margin-bottom: 1.5rem;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-    }
+/* Blue line overlay bawah gambar */
+.kg-img-wrap::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #1a73e8, #60aff5);
+}
 
-    .detail-image {
-        width: 100%;
-        height: 350px;
-        object-fit: cover;
-        transition: transform 0.6s ease, filter 0.6s ease;
-        border-radius: 16px;
-    }
+/* ── Divider ──────────────────────────────────────────── */
+.kg-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    animation: kgUp .4s ease .2s both;
+}
+.kg-divider__line {
+    flex: 1;
+    height: 1px;
+    background: #E5E7EB;
+}
+.kg-divider__dot {
+    width: 6px; height: 6px;
+    background: #1a73e8;
+    border-radius: 50%;
+}
 
-    .image-container:hover .detail-image {
-        transform: scale(1.05);
-        filter: brightness(1.1) saturate(1.2);
-    }
+/* ── Body text ────────────────────────────────────────── */
+.kg-body {
+    font-size: .95rem;
+    color: #374151;
+    line-height: 1.85;
+    margin-bottom: 32px;
+    animation: kgUp .4s ease .25s both;
+}
 
-    .description-text {
-        font-size: 1rem;
-        color: #374151;
-        line-height: 1.6;
-        margin-bottom: 1.5rem;
-        text-align: justify;
-    }
+/* ── Info cards ───────────────────────────────────────── */
+.kg-info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 36px;
+    animation: kgUp .4s ease .3s both;
+}
+@media (max-width: 480px) { .kg-info-row { grid-template-columns: 1fr; } }
 
-    .info-section {
-        background: #f9fafb;
-        border-radius: 12px;
-        padding: 1rem;
-        margin-bottom: 1.5rem;
-    }
+.kg-info-card {
+    background: white;
+    border: 1.5px solid #F0F2F8;
+    border-radius: 14px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: border-color .2s, box-shadow .2s;
+}
+.kg-info-card:hover {
+    border-color: #BFD7F8;
+    box-shadow: 0 4px 16px rgba(26,115,232,.08);
+}
+.kg-info-icon {
+    width: 36px; height: 36px;
+    background: #EBF3FE;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1a73e8;
+    font-size: .85rem;
+    flex-shrink: 0;
+}
+.kg-info-label {
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #9CA3AF;
+    margin-bottom: 3px;
+}
+.kg-info-value {
+    font-size: .88rem;
+    font-weight: 600;
+    color: #1F2937;
+    line-height: 1.3;
+}
 
-    .location-info {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 1rem;
-        color: #4b5563;
-    }
+/* ── Footer action ────────────────────────────────────── */
+.kg-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 24px;
+    border-top: 1.5px solid #F0F2F8;
+    animation: kgUp .4s ease .35s both;
+}
+.kg-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #EBF3FE;
+    color: #1a73e8;
+    font-size: .85rem;
+    font-weight: 700;
+    padding: 11px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background .2s, transform .2s;
+    border: 1.5px solid #BFD7F8;
+}
+.kg-back-btn:hover {
+    background: #1a73e8;
+    color: white;
+    transform: translateY(-2px);
+    text-decoration: none;
+    border-color: #1a73e8;
+}
+.kg-share-note {
+    font-size: .75rem;
+    color: #D1D5DB;
+    letter-spacing: .04em;
+}
 
-    .back-button {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 12px 20px;
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
-        color: white;
-        font-weight: 600;
-        border-radius: 50px;
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
+/* ── Keyframes ────────────────────────────────────────── */
+@keyframes kgUp {
+    from { opacity:0; transform:translateY(18px); }
+    to   { opacity:1; transform:translateY(0); }
+}
 
-    .back-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .detail-card { padding: 1.5rem; }
-        .detail-title { font-size: 1.6rem; }
-        .detail-image { height: 220px; }
-        .description-text { font-size: 0.95rem; }
-        .back-button { padding: 10px 16px; font-size: 0.9rem; }
-        .shape { opacity: 0.3; width: 20px !important; height: 20px !important; }
-    }
-
-    @media (max-width: 480px) {
-        .detail-title { font-size: 1.4rem; }
-        .detail-image { height: 180px; }
-        .description-text { font-size: 0.9rem; }
-        .back-button { width: 100%; justify-content: center; }
-    }
-
-    /* Animations */
-    @keyframes slideInUp { from {opacity:0;transform:translateY(40px);} to {opacity:1;transform:translateY(0);} }
-    @keyframes fadeInScale { from {opacity:0;transform:scale(0.95);} to {opacity:1;transform:scale(1);} }
+@media (max-width: 480px) {
+    .kg-img-wrap img { height: 220px; }
+    .kg-footer { flex-direction: column; gap: 12px; align-items: flex-start; }
+    .kg-back-btn { width: 100%; justify-content: center; }
+}
 </style>
 
-<!-- Background Floating Shapes -->
-<div class="floating-shapes">
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
-    <div class="shape shape-3"></div>
-    <div class="shape shape-4"></div>
-    <div class="shape shape-5"></div>
-    <div class="shape shape-6"></div>
-    <div class="shape shape-7"></div>
-    <div class="shape shape-8"></div>
-</div>
+<div class="kg-show">
 
-<div class="content-wrapper">
-    <div class="detail-container">
-        <div class="detail-card">
-            <h1 class="detail-title">{{ $kegiatan->nama_kegiatan ?? 'Nama Kegiatan' }}</h1>
+    {{-- Back nav --}}
+    <a href="{{ route('user.kegiatan.index') }}" class="kg-back">
+        <i class="fas fa-arrow-left"></i> Semua Kegiatan
+    </a>
 
-            @if($kegiatan->gambar)
-                <div class="image-container">
-                    <img src="{{ asset('storage/'.$kegiatan->gambar) }}" alt="{{ $kegiatan->nama_kegiatan ?? 'Kegiatan' }}" class="detail-image">
-                </div>
-            @endif
+    {{-- Meta --}}
+    <div class="kg-meta">
+        <span class="kg-tag">Kegiatan</span>
+        <span class="kg-meta-sep"></span>
+        <span class="kg-meta-date">
+            <i class="fas fa-calendar-alt"></i>
+            {{ \Carbon\Carbon::parse($kegiatan->tanggal)->translatedFormat('d F Y') }}
+        </span>
+        @if($kegiatan->lokasi)
+        <span class="kg-meta-sep"></span>
+        <span class="kg-meta-loc">
+            <i class="fas fa-map-marker-alt"></i>
+            {{ $kegiatan->lokasi }}
+        </span>
+        @endif
+    </div>
 
-            <div class="description-text">
-                {{ $kegiatan->deskripsi ?? 'Deskripsi kegiatan tidak tersedia.' }}
+    {{-- Title --}}
+    <h1 class="kg-title">{{ ucfirst($kegiatan->nama_kegiatan ?? 'Nama Kegiatan') }}</h1>
+
+    {{-- Image --}}
+    @if($kegiatan->gambar)
+    <div class="kg-img-wrap">
+        <img src="{{ asset('storage/'.$kegiatan->gambar) }}"
+             alt="{{ $kegiatan->nama_kegiatan }}">
+    </div>
+    @endif
+
+    {{-- Divider --}}
+    <div class="kg-divider">
+        <div class="kg-divider__line"></div>
+        <div class="kg-divider__dot"></div>
+        <div class="kg-divider__line"></div>
+    </div>
+
+    {{-- Body --}}
+    <div class="kg-body">
+        {{ $kegiatan->deskripsi ?? 'Deskripsi kegiatan tidak tersedia.' }}
+    </div>
+
+    {{-- Info cards --}}
+    <div class="kg-info-row">
+        <div class="kg-info-card">
+            <div class="kg-info-icon">
+                <i class="fas fa-calendar-alt"></i>
             </div>
-
-            <div class="info-section">
-                <div class="location-info">
-                    📍 Lokasi: <strong>{{ $kegiatan->lokasi ?? 'Tidak ditentukan' }}</strong>
-                </div>
-                <div class="location-info">
-                    📅 {{ \Carbon\Carbon::parse($kegiatan->tanggal)->translatedFormat('d F Y') }}
+            <div>
+                <div class="kg-info-label">Tanggal</div>
+                <div class="kg-info-value">
+                    {{ \Carbon\Carbon::parse($kegiatan->tanggal)->translatedFormat('d F Y') }}
                 </div>
             </div>
-
-            <a href="{{ route('user.kegiatan.index') }}" class="back-button">
-                ⬅ Kembali ke Daftar
-            </a>
+        </div>
+        <div class="kg-info-card">
+            <div class="kg-info-icon">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div>
+                <div class="kg-info-label">Lokasi</div>
+                <div class="kg-info-value">
+                    {{ $kegiatan->lokasi ?? 'Tidak ditentukan' }}
+                </div>
+            </div>
         </div>
     </div>
+
+    {{-- Footer --}}
+    <div class="kg-footer">
+        <a href="{{ route('user.kegiatan.index') }}" class="kg-back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Kembali ke Daftar
+        </a>
+        <span class="kg-share-note">Digital Residence</span>
+    </div>
+
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const shapes = document.querySelectorAll('.shape');
-    document.addEventListener('mousemove', function(e) {
-        const mouseX = e.clientX / window.innerWidth;
-        const mouseY = e.clientY / window.innerHeight;
-        shapes.forEach((shape, index) => {
-            const speed = (index + 1) * 0.2;
-            const x = (mouseX - 0.5) * speed * 30;
-            const y = (mouseY - 0.5) * speed * 30;
-            shape.style.transform = `translate(${x}px, ${y}px)`;
-        });
-    });
-});
-</script>
 @endsection

@@ -1,656 +1,431 @@
 @extends('layouts.user')
 
 @section('content')
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pengumuman Penting</title>
-    <style>
-        /* Base Styles - Tetap seperti kode asli */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 50%, #e6f3ff 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow-x: hidden;
-            position: relative;
-        }
+<style>
+body { background: #F5F7FA; }
 
-        /* Floating decorative elements */
-        .floating-shapes {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 1;
-        }
+.pgm {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 36px 20px 100px;
+}
 
-        .shape {
-            position: absolute;
-            animation: float 6s ease-in-out infinite;
-        }
+/* ── Header ───────────────────────────────────────────── */
+.pgm__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 12px;
+    animation: pgmUp .4s ease both;
+}
+.pgm__header-left {}
+.pgm__eyebrow {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: #2846a7;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 6px;
+}
+.pgm__eyebrow::before {
+    content: '';
+    width: 18px; height: 2px;
+    background: #2844a7;
+    border-radius: 2px;
+}
+.pgm__title {
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
+    font-weight: 800;
+    color: #0F172A;
+    letter-spacing: -.025em;
+    line-height: 1.15;
+}
+.pgm__count {
+    font-size: .75rem;
+    font-weight: 600;
+    color: #9CA3AF;
+    margin-top: 4px;
+}
 
-        .shape-1 {
-            top: 15%;
-            left: 20%;
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(45deg, #ff9a9e, #fecfef);
-            border-radius: 50% 20% 50% 20%;
-            animation-delay: 0s;
-        }
+/* ── List ─────────────────────────────────────────────── */
+.pgm__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: #EBEBEB;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1.5px solid #EBEBEB;
+}
 
-        .shape-2 {
-            top: 25%;
-            right: 15%;
-            width: 35px;
-            height: 35px;
-            background: linear-gradient(45deg, #a8edea, #fed6e3);
-            border-radius: 20% 50% 20% 50%;
-            animation-delay: 2s;
-        }
+/* ── Card ─────────────────────────────────────────────── */
+.pgm__card {
+    background: white;
+    display: grid;
+    grid-template-columns: 4px 1fr;
+    transition: background .15s;
+    animation: pgmSlide .35s ease both;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+.pgm__card:hover { background: #FAFFFE; text-decoration: none; color: inherit; }
 
-        .shape-3 {
-            bottom: 20%;
-            left: 15%;
-            width: 30px;
-            height: 30px;
-            background: linear-gradient(45deg, #d299c2, #fef9d7);
-            border-radius: 50%;
-            animation-delay: 4s;
-        }
+/* Stagger */
+.pgm__card:nth-child(1) { animation-delay:.05s; }
+.pgm__card:nth-child(2) { animation-delay:.09s; }
+.pgm__card:nth-child(3) { animation-delay:.13s; }
+.pgm__card:nth-child(4) { animation-delay:.17s; }
+.pgm__card:nth-child(5) { animation-delay:.21s; }
+.pgm__card:nth-child(n+6){ animation-delay:.25s; }
 
-        .shape-4 {
-            top: 60%;
-            right: 25%;
-            width: 25px;
-            height: 25px;
-            background: linear-gradient(45deg, #89f7fe, #66a6ff);
-            border-radius: 20%;
-            animation-delay: 1s;
-        }
+/* Left accent bar */
+.pgm__bar { background: #E5E7EB; transition: background .2s; }
+.pgm__card:hover .pgm__bar { background: #284aa7; }
 
-        .shape-5 {
-            bottom: 40%;
-            right: 10%;
-            width: 20px;
-            height: 20px;
-            background: linear-gradient(45deg, #ffecd2, #fcb69f);
-            border-radius: 50%;
-            animation-delay: 3s;
-        }
+/* Card inner */
+.pgm__inner {
+    padding: 20px 22px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            25% { transform: translateY(-15px) rotate(90deg); }
-            50% { transform: translateY(-10px) rotate(180deg); }
-            75% { transform: translateY(-20px) rotate(270deg); }
-        }
+/* Date column */
+.pgm__date-col {
+    flex-shrink: 0;
+    width: 44px;
+    text-align: center;
+    background: #F5F7FA;
+    border-radius: 10px;
+    padding: 8px 6px;
+    border: 1.5px solid #F0F0F0;
+    transition: border-color .2s, background .2s;
+}
+.pgm__card:hover .pgm__date-col {
+    border-color: #C8ECD1;
+    background: #F0FDF4;
+}
+.pgm__date-day {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #111;
+    line-height: 1;
+    display: block;
+}
+.pgm__date-mon {
+    font-size: .55rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #283da7;
+    display: block;
+    margin-top: 2px;
+}
 
-        .container {
-            text-align: center;
-            z-index: 10;
-            position: relative;
-            max-width: 900px;
-            padding: 20px;
-        }
+/* Content */
+.pgm__content { flex: 1; min-width: 0; }
+.pgm__content-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+}
+.pgm__content-title {
+    font-size: .95rem;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.35;
+    transition: color .2s;
+}
+.pgm__card:hover .pgm__content-title { color: #053f96; }
 
-        /* Phone stack styles - Untuk kondisi kosong */
-        .phone-stack {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 40px;
-            animation: phoneFloat 4s ease-in-out infinite;
-        }
-        
-        .phone {
-            width: 200px;
-            height: 350px;
-            border-radius: 25px;
-            position: relative;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            border: 3px solid #6c7ce0;
-        }
+.pgm__content-body {
+    font-size: .8rem;
+    color: #6B7280;
+    line-height: 1.6;
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.pgm__content-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.pgm__author {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .72rem;
+    color: #9CA3AF;
+}
+.pgm__author-av {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2846a7, #2058c9);
+    color: white;
+    font-size: .6rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.pgm__cta {
+    font-size: .72rem;
+    font-weight: 700;
+    color: #2850a7;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: gap .2s;
+}
+.pgm__card:hover .pgm__cta { gap: 8px; }
+.pgm__cta i { font-size: .6rem; }
 
-        .phone-main {
-            background: linear-gradient(135deg, #ffc0cb, #ffb3e6);
-            z-index: 3;
-            position: relative;
-        }
+/* ── Desktop: 2-col layout ────────────────────────────── */
+@media (min-width: 768px) {
+    .pgm__layout {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: 28px;
+        align-items: start;
+    }
 
-        .phone-left {
-            background: linear-gradient(135deg, #a8f0c8, #7fefb3);
-            position: absolute;
-            left: -60px;
-            top: 20px;
-            z-index: 2;
-            transform: rotate(-15deg);
-        }
+    /* Sidebar */
+    .pgm__sidebar {
+        position: sticky;
+        top: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
 
-        .phone-right {
-            background: linear-gradient(135deg, #b3d9ff, #9bc9ff);
-            position: absolute;
-            right: -60px;
-            top: -20px;
-            z-index: 1;
-            transform: rotate(15deg);
-        }
+    /* Stat cards */
+    .pgm__stat {
+        background: white;
+        border-radius: 14px;
+        padding: 18px 18px;
+        border: 1.5px solid #F0F0F0;
+        transition: border-color .2s;
+        animation: pgmUp .4s ease both;
+    }
+    .pgm__stat:hover { border-color: #C8ECD1; }
+    .pgm__stat:nth-child(1) { animation-delay: .06s; }
+    .pgm__stat:nth-child(2) { animation-delay: .10s; }
+    .pgm__stat:nth-child(3) { animation-delay: .14s; }
+    .pgm__stat-val {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #111;
+        line-height: 1;
+        margin-bottom: 4px;
+    }
+    .pgm__stat-val--green { color: #2850a7; }
+    .pgm__stat-label {
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: #ABABAB;
+    }
+    .pgm__stat-icon {
+        font-size: .8rem;
+        margin-bottom: 8px;
+    }
+    .pgm__stat-icon--green { color: #2857a7; }
+    .pgm__stat-icon--gray  { color: #ABABAB; }
+}
 
-        .phone-header {
-            height: 60px;
-            background: rgba(255, 255, 255, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
+/* Mobile: hide sidebar */
+@media (max-width: 767px) {
+    .pgm__sidebar { display: none; }
+    .pgm__layout  { display: block; }
+    .pgm__header  { margin-bottom: 24px; }
+}
 
-        .header-dots {
-            display: flex;
-            gap: 6px;
-        }
+/* ── Empty state ──────────────────────────────────────── */
+.pgm__empty {
+    background: white;
+    border-radius: 16px;
+    border: 1.5px solid #F0F0F0;
+    padding: 80px 20px;
+    text-align: center;
+    animation: pgmUp .5s ease both;
+}
+.pgm__empty-icon { font-size: 2.5rem; margin-bottom: 14px; opacity: .35; }
+.pgm__empty-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 5px;
+}
+.pgm__empty-sub { font-size: .82rem; color: #9CA3AF; margin-bottom: 20px; }
+.pgm__empty-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ECFDF5;
+    color: #284aa7;
+    border: 1.5px solid #C8ECD1;
+    border-radius: 8px;
+    padding: 9px 18px;
+    font-size: .82rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background .2s;
+}
+.pgm__empty-back:hover { background: #2831a7; color: white; text-decoration: none; }
 
-        .dot {
-            width: 8px;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-        }
+/* ── Pagination ───────────────────────────────────────── */
+.pgm__pagination {
+    margin-top: 24px;
+    display: flex;
+    justify-content: center;
+    animation: pgmUp .4s ease .3s both;
+}
 
-        .phone-content {
-            padding: 30px 25px;
-            height: calc(100% - 60px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .announcement-icon {
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.4);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            font-size: 30px;
-            animation: pulse 2s ease-in-out infinite;
-        }
+/* ── Keyframes ────────────────────────────────────────── */
+@keyframes pgmUp {
+    from { opacity:0; transform:translateY(16px); }
+    to   { opacity:1; transform:translateY(0); }
+}
+@keyframes pgmSlide {
+    from { opacity:0; transform:translateX(-6px); }
+    to   { opacity:1; transform:translateX(0); }
+}
+</style>
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
+<div class="pgm">
 
-        .content-lines {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .line {
-            height: 8px;
-            background: rgba(255, 255, 255, 0.4);
-            border-radius: 4px;
-            margin-bottom: 8px;
-        }
-
-        .line:nth-child(1) { width: 90%; margin: 0 auto 8px; }
-        .line:nth-child(2) { width: 70%; margin: 0 auto 8px; }
-        .line:nth-child(3) { width: 85%; margin: 0 auto 8px; }
-        .line:nth-child(4) { width: 60%; margin: 0 auto 15px; }
-        .line:nth-child(5) { width: 80%; margin: 0 auto 8px; }
-
-        .side-numbers {
-            position: absolute;
-            font-size: 60px;
-            font-weight: bold;
-            color: rgba(255, 255, 255, 0.9);
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .number-left {
-            left: 30px;
-            color: #2d8f5f;
-        }
-
-        .number-right {
-            right: 30px;
-            color: #4a90e2;
-        }
-
-        .announcement-text {
-            margin-top: 40px;
-        }
-
-        .announcement-title {
-            font-size: 48px;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 15px;
-            animation: fadeInUp 1s ease-out;
-            background: linear-gradient(135deg, #667eea 0%, #0ea75fff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .announcement-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #ff6b6b, #feca57);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 25px;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            animation: fadeInUp 1s ease-out 0.1s both;
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
-        }
-
-        .announcement-message {
-            font-size: 18px;
-            color: #4a5568;
-            margin-bottom: 25px;
-            line-height: 1.6;
-            animation: fadeInUp 1s ease-out 0.2s both;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 30px;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-size: 16px;
-            animation: fadeInUp 1s ease-out 0.4s both;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #6c7ce0, #8e94f2);
-            color: white;
-            box-shadow: 0 8px 20px rgba(108, 124, 224, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 25px rgba(108, 124, 224, 0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.9);
-            color: #4a5568;
-            border: 2px solid #e2e8f0;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
-            background: white;
-        }
-
-        /* Announcement list styles - UNTUK KONDISI ADA PENGUMUMAN */
-        .announcements-list {
-            max-width: 800px;
-            margin: 0 auto;
-            animation: fadeInUp 1s ease-out 0.3s both;
-        }
-
-        .announcement-card {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            text-align: left; /* Added to align card content to the left */
-        }
-
-        .announcement-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .announcement-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .card-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #2d3748;
-            margin: 0;
-        }
-
-        .card-date {
-            font-size: 14px;
-            color: #718096;
-            background: rgba(113, 128, 150, 0.1);
-            padding: 5px 12px;
-            border-radius: 12px;
-        }
-
-        .card-priority {
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .priority-high {
-            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
-            color: white;
-        }
-
-        .priority-medium {
-            background: linear-gradient(135deg, #feca57, #ff9ff3);
-            color: white;
-        }
-
-        .priority-low {
-            background: linear-gradient(135deg, #48cae4, #51cf66);
-            color: white;
-        }
-
-        .card-content {
-            color: #4a5568;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-
-        .card-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .card-author {
-            font-size: 14px;
-            color: #718096;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .author-avatar {
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .read-more {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-            transition: color 0.3s ease;
-        }
-
-        .read-more:hover {
-            color: #764ba2;
-        }
-
-        /* Keyframes - Tetap seperti kode asli */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes phoneFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-        }
-
-        .phone-main .content-lines .line {
-            animation: contentPulse 2s ease-in-out infinite;
-        }
-
-        .phone-main .content-lines .line:nth-child(2) { animation-delay: 0.3s; }
-        .phone-main .content-lines .line:nth-child(3) { animation-delay: 0.6s; }
-        .phone-main .content-lines .line:nth-child(4) { animation-delay: 0.9s; }
-        .phone-main .content-lines .line:nth-child(5) { animation-delay: 1.2s; }
-
-        @keyframes contentPulse {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 0.8; }
-        }
-
-        /* Responsive Design - Tetap seperti kode asli */
-        @media (max-width: 768px) {
-            .phone { width: 160px; height: 280px; }
-            .phone-left, .phone-right { width: 160px; height: 280px; }
-            .side-numbers { font-size: 40px; }
-            .announcement-title { font-size: 36px; }
-            .announcement-message { font-size: 16px; padding: 0 20px; }
-            .action-buttons { flex-direction: column; align-items: center; }
-            .btn { width: 200px; justify-content: center; }
-            .announcement-card { margin: 15px 10px; padding: 20px; }
-            .card-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-        }
-
-        @media (max-width: 480px) {
-            .phone { width: 140px; height: 240px; }
-            .phone-left, .phone-right { width: 140px; height: 240px; }
-            .side-numbers { font-size: 30px; }
-            .number-left { left: 15px; }
-            .number-right { right: 15px; }
-            .announcement-title { font-size: 32px; }
-            .container { padding: 15px; }
-        }
-    </style>
-</head>
-<body>
-    <div class="floating-shapes">
-        <div class="shape shape-1"></div>
-        <div class="shape shape-2"></div>
-        <div class="shape shape-3"></div>
-        <div class="shape shape-4"></div>
-        <div class="shape shape-5"></div>
+    {{-- Header --}}
+    <div class="pgm__header">
+        <div class="pgm__header-left">
+            <div class="pgm__eyebrow">Digital Residence</div>
+            <h1 class="pgm__title">Pengumuman</h1>
+            @if(isset($pengumuman) && count($pengumuman) > 0)
+            <div class="pgm__count">{{ count($pengumuman) }} pengumuman tersedia</div>
+            @endif
+        </div>
     </div>
 
-    {{-- Logika untuk menampilkan pengumuman atau pesan kosong --}}
-    @if(isset($pengumuman) && count($pengumuman) > 0)
-        {{-- Jika ada pengumuman, tampilkan daftar --}}
-        <div class="container">
-            <div class="announcement-text">
-                <h1 class="announcement-title">Pengumuman Penting</h1>
-                <p class="announcement-message">
-                    Berikut adalah pengumuman-pengumuman terbaru untuk Anda.
-                </p>
-            </div>
-            
-            <div class="announcements-list">
-                @foreach($pengumuman as $item)
-                <div class="announcement-card">
-                    <div class="card-header">
-                        <h3 class="card-title">{{ $item->judul ?? 'Judul Pengumuman' }}</h3>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <div class="card-date">
-                                📅 {{ isset($item->created_at) ? $item->created_at->format('d M Y') : date('d M Y') }}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card-content">
-                        {{ Str::limit($item->isi ?? 'Konten pengumuman tidak tersedia.', 200) }}
-                    </div>
-                    
-                    <div class="card-footer">
-                        <div class="card-author">
-                            <div class="author-avatar">
-                                {{ substr($item->author ?? 'Admin', 0, 1) }}
-                            </div>
-                            <span>{{ $item->author ?? 'Admin' }}</span>
-                        </div>
-                        @if(isset($item->id))
-                        <a href="{{ route('user.pengumuman.show', $item->id) }}" class="read-more">
-                            Baca Selengkapnya
-                        </a>
-                        @endif
-                    </div>
+    <div class="pgm__layout">
+
+        {{-- ── Sidebar (desktop only) ─────────────────── --}}
+        @if(isset($pengumuman) && count($pengumuman) > 0)
+        <div class="pgm__sidebar">
+            <div class="pgm__stat">
+                <div class="pgm__stat-icon pgm__stat-icon--green">
+                    <i class="fas fa-bullhorn"></i>
                 </div>
-                @endforeach
+                <div class="pgm__stat-val pgm__stat-val--green">{{ count($pengumuman) }}</div>
+                <div class="pgm__stat-label">Total Pengumuman</div>
+            </div>
+            <div class="pgm__stat">
+                <div class="pgm__stat-icon pgm__stat-icon--gray">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="pgm__stat-val">
+                    {{ \Carbon\Carbon::parse($pengumuman->first()->created_at)->translatedFormat('M Y') }}
+                </div>
+                <div class="pgm__stat-label">Terbaru</div>
+            </div>
+            <div class="pgm__stat">
+                <div class="pgm__stat-icon pgm__stat-icon--gray">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="pgm__stat-val" style="font-size:.95rem;">Digital Residence</div>
+                <div class="pgm__stat-label">Lingkungan</div>
             </div>
         </div>
+        @endif
 
-    @else
-        {{-- Jika tidak ada pengumuman, tampilkan ilustrasi dan pesan "Oops..." --}}
-        <div class="container">
-            <div class="phone-stack">
-                <div class="phone phone-left">
-                    <div class="phone-header">
-                        <div class="header-dots">
-                            <div class="dot"></div>
-                            <div class="dot"></div>
-                            <div class="dot"></div>
+        {{-- ── Main content ────────────────────────────── --}}
+        <div>
+            @if(isset($pengumuman) && count($pengumuman) > 0)
+
+                <div class="pgm__list">
+                    @foreach($pengumuman as $item)
+                    <a href="{{ isset($item->id) ? route('user.pengumuman.show', $item->id) : '#' }}"
+                       class="pgm__card">
+                        <div class="pgm__bar"></div>
+                        <div class="pgm__inner">
+
+                            {{-- Date box --}}
+                            <div class="pgm__date-col">
+                                <span class="pgm__date-day">
+                                    {{ isset($item->created_at) ? $item->created_at->format('d') : date('d') }}
+                                </span>
+                                <span class="pgm__date-mon">
+                                    {{ isset($item->created_at) ? $item->created_at->format('M') : date('M') }}
+                                </span>
+                            </div>
+
+                            {{-- Content --}}
+                            <div class="pgm__content">
+                                <div class="pgm__content-top">
+                                    <div class="pgm__content-title">
+                                        {{ $item->judul ?? 'Judul Pengumuman' }}
+                                    </div>
+                                </div>
+                                <div class="pgm__content-body">
+                                    {{ Str::limit($item->isi ?? 'Konten pengumuman tidak tersedia.', 120) }}
+                                </div>
+                                <div class="pgm__content-footer">
+                                    <div class="pgm__author">
+                                        <div class="pgm__author-av">
+                                            {{ strtoupper(substr($item->author ?? 'A', 0, 1)) }}
+                                        </div>
+                                        {{ $item->author ?? 'Admin' }}
+                                    </div>
+                                    <span class="pgm__cta">
+                                        Baca selengkapnya
+                                        <i class="fas fa-arrow-right"></i>
+                                    </span>
+                                </div>
+                            </div>
+
                         </div>
-                    </div>
-                    <div class="phone-content">
-                        <div class="side-numbers number-left">🔍</div>
-                    </div>
+                    </a>
+                    @endforeach
                 </div>
 
-                <div class="phone phone-right">
-                    <div class="phone-header">
-                        <div class="header-dots">
-                            <div class="dot"></div>
-                            <div class="dot"></div>
-                            <div class="dot"></div>
-                        </div>
-                    </div>
-                    <div class="phone-content">
-                        <div class="side-numbers number-right">📄</div>
-                    </div>
+                {{-- Pagination --}}
+                @if(method_exists($pengumuman, 'links'))
+                <div class="pgm__pagination">
+                    {{ $pengumuman->links('pagination::tailwind') }}
+                </div>
+                @endif
+
+            @else
+
+                {{-- Empty state --}}
+                <div class="pgm__empty">
+                    <div class="pgm__empty-icon">📭</div>
+                    <div class="pgm__empty-title">Belum ada pengumuman</div>
+                    <div class="pgm__empty-sub">Pengumuman terbaru akan muncul di sini</div>
+                    <a href="javascript:history.back()" class="pgm__empty-back">
+                        <i class="fas fa-arrow-left"></i> Kembali
+                    </a>
                 </div>
 
-                <div class="phone phone-main">
-                    <div class="phone-header">
-                        <div class="header-dots">
-                            <div class="dot"></div>
-                            <div class="dot"></div>
-                            <div class="dot"></div>
-                        </div>
-                    </div>
-                    <div class="phone-content">
-                        <div class="search-icon" style="font-size: 24px; color: #6c7ce0; background: rgba(255, 255, 255, 0.4); border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">🔍</div>
-                        <div class="content-lines">
-                            <div class="line"></div>
-                            <div class="line"></div>
-                            <div class="line"></div>
-                            <div class="line"></div>
-                        </div>
-                        <div class="heart" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); color: rgba(255, 255, 255, 0.6); font-size: 20px; animation: heartbeat 2s ease-in-out infinite;">💜</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="error-text" style="margin-top: 40px;">
-                <h1 class="oops-title" style="font-size: 48px; font-weight: 300; color: #8e9aaf; margin-bottom: 15px; animation: fadeInUp 1s ease-out;">Oops...</h1>
-                <p class="error-message" style="font-size: 18px; color: #a8b2c8; margin-bottom: 30px; animation: fadeInUp 1s ease-out 0.2s both;">Tidak ada pengumuman yang ditemukan saat ini.</p>
-                <a href="javascript:history.back()" class="back-button" style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 30px; background: linear-gradient(135deg, #6c7ce0, #8e94f2); color: white; text-decoration: none; border-radius: 25px; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 8px 20px rgba(108, 124, 224, 0.3); animation: fadeInUp 1s ease-out 0.4s both;">
-                    <span>←</span> Kembali
-                </a>
-            </div>
+            @endif
         </div>
-    @endif
 
-    <script>
-        // JavaScript Anda, tidak ada perubahan
-        document.addEventListener('DOMContentLoaded', function() {
-            const phones = document.querySelectorAll('.phone');
-            phones.forEach(phone => {
-                phone.addEventListener('click', function() {
-                    this.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        this.style.transform = '';
-                    }, 150);
-                });
-            });
+    </div>
+</div>
 
-            document.addEventListener('mousemove', function(e) {
-                const shapes = document.querySelectorAll('.shape');
-                const mouseX = e.clientX / window.innerWidth;
-                const mouseY = e.clientY / window.innerHeight;
-
-                shapes.forEach((shape, index) => {
-                    const speed = (index + 1) * 0.5;
-                    const x = (mouseX - 0.5) * speed * 20;
-                    const y = (mouseY - 0.5) * speed * 20;
-                    
-                    shape.style.transform = `translate(${x}px, ${y}px)`;
-                });
-            });
-
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    history.back();
-                }
-            });
-        });
-    </script>
-</body>
-</html>
 @endsection
