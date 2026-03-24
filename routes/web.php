@@ -81,13 +81,37 @@ Route::group([
         ->name('pembayaran.destroyPembayaran');
     Route::post('/pembayaran/generate', [PembayaranController::class, 'generate'])
         ->name('pembayaran.generate');
-    Route::resource('biaya_setting', BiayaSettingController::class)->only(['index', 'store']);
+
+    Route::get('biaya_setting', [BiayaSettingController::class, 'index'])
+        ->name('biaya_setting.index');
+    Route::get('biaya_setting/create', [BiayaSettingController::class, 'create'])
+        ->name('biaya_setting.create');
+    Route::post('biaya_setting', [BiayaSettingController::class, 'store'])
+        ->name('biaya_setting.store');
+    Route::get('biaya_setting/{biaya_setting}/edit', [BiayaSettingController::class, 'edit'])
+        ->name('biaya_setting.edit');
+    Route::put('biaya_setting/{biaya_setting}', [BiayaSettingController::class, 'update'])
+        ->name('biaya_setting.update');
+
     Route::resource('iklan', IklanController::class);
     Route::resource('pengumuman', PengumumanController::class);
     Route::resource('kegiatan', KegiatanController::class);
     Route::resource('saran', KritikSaranController::class);
     Route::resource('rekenings', RekeningController::class);
-    Route::resource('users', UserBaruController::class);
+   // === User Routes (lengkap dengan import excel) ===
+Route::get('users', [UserBaruController::class, 'index'])->name('users.index');
+Route::get('users/create', [UserBaruController::class, 'create'])->name('users.create');
+Route::post('users', [UserBaruController::class, 'store'])->name('users.store');
+Route::get('users/{user}/edit', [UserBaruController::class, 'edit'])->name('users.edit');
+Route::put('users/{user}', [UserBaruController::class, 'update'])->name('users.update');
+Route::delete('users/{user}', [UserBaruController::class, 'destroy'])->name('users.destroy');
+
+// Route khusus Import Excel
+Route::post('users/import', [UserBaruController::class, 'import'])
+     ->name('users.import');
+
+Route::get('users/download-template', [UserBaruController::class, 'downloadTemplate'])
+     ->name('users.downloadTemplate');
 
     Route::get('/keluhan', [KeluhanController::class, 'index'])->name('keluhan.index');
     Route::get('/keluhan/{keluhan}', [KeluhanController::class, 'show'])->name('keluhan.show');

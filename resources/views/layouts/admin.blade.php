@@ -26,7 +26,7 @@
   </div> -->
 
   <div class="preloader">
-    <img src="{{ asset('assets/images/logos/digital1.png') }}" alt="loader" 
+    <img src="{{ asset('assets/images/logos/digital1.png') }}" alt="loader"
      class="lds-ripple" style="width: 150px;" />
   </div>
 
@@ -34,11 +34,11 @@
     <!-- Sidebar Start -->
    <aside class="left-sidebar with-vertical" id="sidebarDesktop">
     <div class="brand-logo d-flex align-items-center justify-content-between">
-        
+
         <img src="{{ asset('assets/images/logos/digital.png') }}" alt="Logo"
      class="rounded-circle border border-2 border-primary mx-auto d-block"
      style="width:130px; height:130px; object-fit:cover;"  id="sidebarTitle">
-     
+
         <a href="javascript:void(0)" class="sidebartoggler d-block d-xl-none" id="sidebarToggleMobile">
             <i class="ti ti-x"></i>
         </a>
@@ -46,14 +46,14 @@
 
     <!-- User Info Header (Pindah ke sini biar gak overlap, ganti fixed-profile) -->
     <div style="position: relative; z-index: 10;">
-      
+
     </div>
 
       @include('layouts.components.sidebar')
     </aside>
     <!-- Sidebar End -->
 
-    <div class="page-wrapper">
+    <div class="page-wrapper" style="padding-top: 100px;">
       @include('layouts.components.navbar')
 
       <div class="container-fluid">

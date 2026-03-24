@@ -3,12 +3,26 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class BiayaSetting extends Model
 {
-     use HasFactory;
-
     protected $table = 'biaya_settings';
-    protected $fillable = ['keamanan', 'kebersihan','tanggal_tagih', 'tanggal_jatuh_tempo',];
+    protected $fillable = [
+        'periode',
+        'bulan',
+        'tahun',
+        'keamanan',
+        'kebersihan',
+        'tanggal_tagih',
+        'tanggal_jatuh_tempo',
+    ];
+
+    // Helper untuk ambil setting bulan ini
+    public static function getCurrent()
+    {
+        $now = now();
+        return self::where('tahun', $now->year)
+                   ->where('bulan', $now->month)
+                   ->first();
+    }
 }

@@ -1,11 +1,11 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Pembayaran;
 use App\Models\BiayaSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class PembayaranController extends Controller
@@ -50,61 +50,79 @@ class PembayaranController extends Controller
         return view('admin.pembayaran.create');
     }
 
-
-
     public function store(Request $request)
-{
-    $today = now();
-    $biaya = \App\Models\BiayaSetting::latest()->first();
+    {
+        $now = now();
 
-    if (!$biaya) {
-        return redirect()->back()->with('error', 'Silakan atur biaya setting terlebih dahulu.');
-    }
+        // Ambil BiayaSetting untuk bulan ini
+        $biaya = BiayaSetting::where('tahun', $now->year)
+                             ->where('bulan', $now->month)
+                             ->first();
 
-    if ($request->has('id_user') && $request->id_user) {
-        // Buat pembayaran untuk user tertentu
-        $exists = Pembayaran::where('id_user', $request->id_user)
-            ->whereMonth('tanggal', $today->month)
-            ->whereYear('tanggal', $today->year)
-            ->exists();
-
-        if (!$exists) {
-            Pembayaran::create([
-                'id_user'              => $request->id_user,
-                'keamanan'             => $biaya->keamanan,
-                'kebersihan'           => $biaya->kebersihan,
-                'tanggal'              => $today,
-                'tanggal_jatuh_tempo'  => $biaya->tanggal_jatuh_tempo, // ambil dari BiayaSetting
-                'status'               => 'belum terbayar',
-                'total'                => $biaya->keamanan + $biaya->kebersihan,
-            ]);
+        if (!$biaya) {
+            return redirect()->back()->with('error', 
+                "Biaya Setting untuk bulan {$now->format('F Y')} belum diatur. 
+                 Silakan atur terlebih dahulu di menu Biaya Setting.");
         }
-    } else {
-        // Buat pembayaran massal
-        $users = \App\Models\User::all();
 
-        foreach ($users as $user) {
-            $exists = Pembayaran::where('id_user', $user->id)
-                ->whereMonth('tanggal', $today->month)
-                ->whereYear('tanggal', $today->year)
+        $created = 0;
+        $skipped = 0;
+
+        if ($request->has('id_user') && $request->id_user) {
+            // Buat untuk user tertentu (termasuk user baru)
+            $exists = Pembayaran::where('id_user', $request->id_user)
+                ->whereMonth('tanggal', $now->month)
+                ->whereYear('tanggal', $now->year)
                 ->exists();
 
             if (!$exists) {
                 Pembayaran::create([
-                    'id_user'              => $user->id,
-                    'keamanan'             => $biaya->keamanan,
-                    'kebersihan'           => $biaya->kebersihan,
-                    'tanggal'              => $today,
-                    'tanggal_jatuh_tempo'  => $biaya->tanggal_jatuh_tempo, // ambil dari BiayaSetting
-                    'status'               => 'belum terbayar',
-                    'total'                => $biaya->keamanan + $biaya->kebersihan,
+                    'id_user'             => $request->id_user,
+                    'keamanan'            => $biaya->keamanan,
+                    'kebersihan'          => $biaya->kebersihan,
+                    'tanggal'             => $now,
+                    'tanggal_jatuh_tempo' => $biaya->tanggal_jatuh_tempo,
+                    'status'              => 'belum terbayar',
+                    'total'               => $biaya->keamanan + $biaya->kebersihan,
                 ]);
+                $created = 1;
+            } else {
+                $skipped = 1;
+            }
+        } else {
+            // Buat massal untuk semua user
+            $users = \App\Models\User::all();
+
+            foreach ($users as $user) {
+                $exists = Pembayaran::where('id_user', $user->id)
+                    ->whereMonth('tanggal', $now->month)
+                    ->whereYear('tanggal', $now->year)
+                    ->exists();
+
+                if (!$exists) {
+                    Pembayaran::create([
+                        'id_user'             => $user->id,
+                        'keamanan'            => $biaya->keamanan,
+                        'kebersihan'          => $biaya->kebersihan,
+                        'tanggal'             => $now,
+                        'tanggal_jatuh_tempo' => $biaya->tanggal_jatuh_tempo,
+                        'status'              => 'belum terbayar',
+                        'total'               => $biaya->keamanan + $biaya->kebersihan,
+                    ]);
+                    $created++;
+                } else {
+                    $skipped++;
+                }
             }
         }
-    }
 
-    return redirect()->route('admin.pembayaran.index')->with('success', 'Pembayaran berhasil dibuat.');
-}
+        $message = "Berhasil membuat {$created} tagihan IPL untuk bulan {$now->format('F Y')}.";
+        if ($skipped > 0) {
+            $message .= " {$skipped} user sudah memiliki tagihan di bulan ini.";
+        }
+
+        return redirect()->route('admin.pembayaran.index')->with('success', $message);
+    }
 
     public function edit($id)
     {
@@ -122,113 +140,116 @@ class PembayaranController extends Controller
 
     public function update(Request $request, $id)
     {
-       $pembayaran = Pembayaran::with('dibayar')->findOrFail($id);
+        $pembayaran = Pembayaran::with('dibayar')->findOrFail($id);
 
-    $user = auth()->user();
-    $admin = auth()->guard('admin')->user();
+        $user = auth()->user();
+        $admin = auth()->guard('admin')->user();
 
-    if (!$admin && $pembayaran->id_user !== $user->id) {
-        abort(403, 'Unauthorized');
-    }
-
-    $request->validate([
-        'status' => 'required|in:belum terbayar,pembayaran berhasil',
-    ]);
-
-    $pembayaran->update([
-        'status' => $request->status,
-    ]);
-
-    return redirect()->route('admin.pembayaran.index')
-        ->with('success', 'Status pembayaran berhasil diperbarui.');
-    }
-
-    
-
-public function destroyPembayaran($id)
-{
-    $pembayaran = Pembayaran::with('dibayar')->findOrFail($id);
-
-    $user = auth()->user();
-    $admin = auth()->guard('admin')->user();
-
-    if (!$admin && $pembayaran->id_user !== $user->id) {
-        abort(403, 'Unauthorized');
-    }
-
-    DB::transaction(function () use ($pembayaran) {
-        if ($pembayaran->dibayar && $pembayaran->dibayar->foto) {
-            // hapus file dari storage (disk public)
-            Storage::disk('public')->delete($pembayaran->dibayar->foto);
-
-            $pembayaran->dibayar->delete();
+        if (!$admin && $pembayaran->id_user !== $user->id) {
+            abort(403, 'Unauthorized');
         }
-        $pembayaran->delete();
-    });
 
-    return redirect()->route('admin.pembayaran.index')
-        ->with('success', 'Pembayaran berhasil dihapus.');
-}
+        $request->validate([
+            'status' => 'required|in:belum terbayar,pembayaran berhasil',
+        ]);
 
-public function destroyDibayar($id)
-{
-    $pembayaran = Pembayaran::with('dibayar')->findOrFail($id);
+        $pembayaran->update([
+            'status' => $request->status,
+        ]);
 
-    $user = auth()->user();
-    $admin = auth()->guard('admin')->user();
-
-    if (!$admin && $pembayaran->id_user !== $user->id) {
-        abort(403, 'Unauthorized');
+        return redirect()->route('admin.pembayaran.index')
+            ->with('success', 'Status pembayaran berhasil diperbarui.');
     }
 
-    DB::transaction(function () use ($pembayaran) {
-        if ($pembayaran->dibayar) {
-            if ($pembayaran->dibayar->foto) {
-                // hapus file dari storage (disk public)
+    public function destroyPembayaran($id)
+    {
+        $pembayaran = Pembayaran::with('dibayar')->findOrFail($id);
+
+        $user = auth()->user();
+        $admin = auth()->guard('admin')->user();
+
+        if (!$admin && $pembayaran->id_user !== $user->id) {
+            abort(403, 'Unauthorized');
+        }
+
+        DB::transaction(function () use ($pembayaran) {
+            if ($pembayaran->dibayar && $pembayaran->dibayar->foto) {
                 Storage::disk('public')->delete($pembayaran->dibayar->foto);
+                $pembayaran->dibayar->delete();
             }
-            $pembayaran->dibayar->delete();
+            $pembayaran->delete();
+        });
 
-            // reset status
-            $pembayaran->update(['status' => 'belum terbayar']);
-        }
-    });
-
-    return redirect()->route('admin.pembayaran.index')
-        ->with('success', 'Bukti pembayaran berhasil dihapus.');
-}
-
-     public function generate(Request $request)
-{
-    $today = now();
-    $biaya = \App\Models\BiayaSetting::latest()->first();
-
-    if (!$biaya) {
-        return redirect()->back()->with('error', 'Silakan atur biaya setting terlebih dahulu.');
+        return redirect()->route('admin.pembayaran.index')
+            ->with('success', 'Pembayaran berhasil dihapus.');
     }
 
-    $users = \App\Models\User::all();
+    public function destroyDibayar($id)
+    {
+        $pembayaran = Pembayaran::with('dibayar')->findOrFail($id);
 
-    foreach ($users as $user) {
-        $exists = Pembayaran::where('id_user', $user->id)
-            ->whereMonth('tanggal', $today->month)
-            ->whereYear('tanggal', $today->year)
-            ->exists();
+        $user = auth()->user();
+        $admin = auth()->guard('admin')->user();
 
-        if (!$exists) {
-            Pembayaran::create([
-                'id_user' => $user->id,
-                'keamanan' => $biaya->keamanan,
-                'kebersihan' => $biaya->kebersihan,
-                'tanggal' => $today,
-                'tanggal_jatuh_tempo'  => $biaya->tanggal_jatuh_tempo,
-                'status' => 'belum terbayar',
-                'total' => $biaya->keamanan + $biaya->kebersihan,
-            ]);
+        if (!$admin && $pembayaran->id_user !== $user->id) {
+            abort(403, 'Unauthorized');
         }
+
+        DB::transaction(function () use ($pembayaran) {
+            if ($pembayaran->dibayar) {
+                if ($pembayaran->dibayar->foto) {
+                    Storage::disk('public')->delete($pembayaran->dibayar->foto);
+                }
+                $pembayaran->dibayar->delete();
+
+                // Reset status
+                $pembayaran->update(['status' => 'belum terbayar']);
+            }
+        });
+
+        return redirect()->route('admin.pembayaran.index')
+            ->with('success', 'Bukti pembayaran berhasil dihapus.');
     }
 
-    return redirect()->route('admin.pembayaran.index')
-        ->with('success', 'Pembayaran berhasil dibuat untuk semua user.');
-}
+    public function generate(Request $request)
+    {
+        $now = now();
+
+        $biaya = BiayaSetting::where('tahun', $now->year)
+                             ->where('bulan', $now->month)
+                             ->first();
+
+        if (!$biaya) {
+            return redirect()->back()->with('error', 
+                "Biaya Setting untuk bulan {$now->format('F Y')} belum diatur. 
+                 Silakan atur terlebih dahulu di menu Biaya Setting.");
+        }
+
+        $created = 0;
+
+        $users = \App\Models\User::all();
+
+        foreach ($users as $user) {
+            $exists = Pembayaran::where('id_user', $user->id)
+                ->whereMonth('tanggal', $now->month)
+                ->whereYear('tanggal', $now->year)
+                ->exists();
+
+            if (!$exists) {
+                Pembayaran::create([
+                    'id_user'             => $user->id,
+                    'keamanan'            => $biaya->keamanan,
+                    'kebersihan'          => $biaya->kebersihan,
+                    'tanggal'             => $now,
+                    'tanggal_jatuh_tempo' => $biaya->tanggal_jatuh_tempo,
+                    'status'              => 'belum terbayar',
+                    'total'               => $biaya->keamanan + $biaya->kebersihan,
+                ]);
+                $created++;
+            }
+        }
+
+        return redirect()->route('admin.pembayaran.index')
+            ->with('success', "Berhasil membuat {$created} tagihan IPL untuk bulan {$now->format('F Y')}.");
+    }
 }
