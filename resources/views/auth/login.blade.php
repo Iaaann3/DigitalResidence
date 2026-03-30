@@ -294,98 +294,93 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <script>
-    /* ── Toggle password ── */
-    function togglePassword() {
-        const input = document.getElementById('password');
-        const icon  = document.getElementById('toggle-icon');
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.classList.replace('fa-eye', 'fa-eye-slash');
-        } else {
-            input.type = 'password';
-            icon.classList.replace('fa-eye-slash', 'fa-eye');
-        }
+   /* ── Toggle password ── */
+function togglePassword() {
+    const input = document.getElementById('password');
+    const icon  = document.getElementById('toggle-icon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+
+/* ── Login via AJAX — overlay hanya muncul kalau sukses ── */
+document.getElementById('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    var form    = this;
+    var btn     = document.getElementById('submitBtn');
+    var btnText = document.getElementById('btnText');
+    var overlay = document.getElementById('loginOverlay');
+
+    /* Validasi HTML5 dulu */
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
     }
 
-    /* ── Login via AJAX — overlay hanya muncul kalau sukses ── */
-    document.getElementById('loginForm').addEventListener('submit', function (e) {
-        e.preventDefault();
+    /* Disable tombol & ubah teks saat request berlangsung */
+    btn.classList.add('loading');
+    btn.disabled  = true;
+    btnText.textContent = 'Memeriksa...';
 
-        var form    = this;
-        var btn     = document.getElementById('submitBtn');
-        var btnText = document.getElementById('btnText');
-        var overlay = document.getElementById('loginOverlay');
-
-        /* Validasi HTML5 dulu */
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
-
-        /* Disable tombol & ubah teks saat request berlangsung */
-        btn.classList.add('loading');
-        btn.disabled  = true;
-        btnText.textContent = 'Memeriksa...';
-
-        fetch(form.action, {
-            method:  'POST',
-            body:    new FormData(form),
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(function (res) { return res.json(); })
-        .then(function (data) {
-            if (data.success) {
-                /* ✅ Login berhasil — tampilkan overlay, lalu redirect */
-                overlay.style.display = 'flex';
+    fetch(form.action, {
+        method:  'POST',
+        body:    new FormData(form),
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+        if (data.success) {
+            /* ✅ Login berhasil — tampilkan overlay, langsung redirect tanpa fade out */
+            overlay.style.display = 'flex';
+            requestAnimationFrame(function () {
                 requestAnimationFrame(function () {
-                    requestAnimationFrame(function () {
-                        overlay.classList.add('active');
-                        setTimeout(function () {
-                            /* Sembunyikan overlay sebelum redirect
-                               biar browser tidak cache state overlay = visible */
-                            overlay.classList.remove('active');
-                            overlay.style.opacity = '0';
-                            setTimeout(function () {
-                                window.location.href = data.redirect_url;
-                            }, 300);
-                        }, 1000); /* overlay keliatan ~1 detik */
-                    });
+                    overlay.classList.add('active');
+                    /* Overlay tetap aktif sampai halaman baru kebuka */
+                    setTimeout(function () {
+                        window.location.href = data.redirect_url;
+                    }, 1200);
                 });
-            } else {
-                /* ❌ Login gagal — tampilkan pesan error, reset tombol */
-                showError(data.message || 'No. Rumah atau password salah.');
-                resetBtn();
-            }
-        })
-        .catch(function () {
-            /* Network error — fallback submit biasa */
-            form.submit();
-        });
-
-        function resetBtn() {
-            btn.classList.remove('loading');
-            btn.disabled        = false;
-            btnText.textContent = 'Submit';
+            });
+        } else {
+            /* ❌ Login gagal — tampilkan pesan error, reset tombol */
+            showError(data.message || 'No. Rumah atau password salah.');
+            resetBtn();
         }
-
-        function showError(msg) {
-            /* Hapus alert lama kalau ada */
-            var old = document.getElementById('loginError');
-            if (old) old.remove();
-
-            var alert = document.createElement('div');
-            alert.id  = 'loginError';
-            alert.style.cssText = 'border-radius:10px;margin-bottom:20px;padding:15px;background:rgba(231,76,60,.1);border:1px solid #e74c3c;backdrop-filter:blur(5px);color:#e74c3c;font-size:14px;text-align:left;';
-            alert.textContent = msg;
-
-            /* Sisipkan di atas input pertama */
-            form.insertBefore(alert, form.firstChild);
-
-            /* Shake animation pada form */
-            form.style.animation = 'shake .4s ease';
-            setTimeout(function () { form.style.animation = ''; }, 400);
-        }
+    })
+    .catch(function () {
+        /* Network error — fallback submit biasa */
+        form.submit();
     });
+
+    function resetBtn() {
+        btn.classList.remove('loading');
+        btn.disabled        = false;
+        btnText.textContent = 'Submit';
+    }
+
+    function showError(msg) {
+        /* Hapus alert lama kalau ada */
+        var old = document.getElementById('loginError');
+        if (old) old.remove();
+
+        var alert = document.createElement('div');
+        alert.id  = 'loginError';
+        alert.style.cssText = 'border-radius:10px;margin-bottom:20px;padding:15px;background:rgba(231,76,60,.1);border:1px solid #e74c3c;backdrop-filter:blur(5px);color:#e74c3c;font-size:14px;text-align:left;';
+        alert.textContent = msg;
+
+        /* Sisipkan di atas input pertama */
+        form.insertBefore(alert, form.firstChild);
+
+        /* Shake animation pada form */
+        form.style.animation = 'shake .4s ease';
+        setTimeout(function () { form.style.animation = ''; }, 400);
+    }
+});
 </script>
 
 @endsection
