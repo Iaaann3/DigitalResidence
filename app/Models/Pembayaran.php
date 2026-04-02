@@ -7,7 +7,7 @@ class Pembayaran extends Model
 {
     protected $fillable = [
         'id_user', 'keamanan', 'kebersihan', 'tanggal', 'tanggal_tagih', 'tanggal_jatuh_tempo',
-        'status', 'dibayar_id', 'order_id', 'total',
+        'status', 'dibayar_id', 'order_id', 'total', 'snap_token',
     ];
 
     protected $casts = [

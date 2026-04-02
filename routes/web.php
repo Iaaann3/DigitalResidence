@@ -143,7 +143,7 @@ Route::group([
     Route::get('/pembayaran/{id}/detail', [UserPembayaranController::class, 'detail'])->name('pembayaran.detail');
     Route::post('/pembayaran/{id}/bayar', [UserPembayaranController::class, 'bayar'])->name('pembayaran.bayar');
 
-    // MIDTRANS ROUTES - FIX: pakai midtransGateway bukan payWithGateway
+    // MIDTRANS
     Route::get('/bayar/gateway/{id}', [UserDashboardController::class, 'midtransGateway'])->name('bayar.gateway');
     Route::get('/bayar/nominal/{id}', [UserDashboardController::class, 'getNominal'])->name('bayar.nominal');
     Route::post('/update-status-tagihan', [UserDashboardController::class, 'updateStatus'])->name('update.status');

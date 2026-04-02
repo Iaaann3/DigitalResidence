@@ -23,7 +23,7 @@ class UserDashboardController extends Controller
 
         $tagihan = Pembayaran::where('id_user', $userId)
             ->whereIn('status', ['belum terbayar', 'gagal'])
-            ->latest('tanggal')
+            ->oldest('tanggal')
             ->first();
 
         $totalPembayaran = Pembayaran::where('id_user', $userId)

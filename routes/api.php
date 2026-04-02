@@ -1,15 +1,16 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\MidtransController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\UserDashboardController;
-use App\Http\Controllers\Api\UserPengumumanController;
 use App\Http\Controllers\Api\UserKegiatanController;
-use App\Http\Controllers\Api\UserSaranController;  
-use App\Http\Controllers\Api\UserProfileController;
-use App\Http\Controllers\Api\UserPembayaranController;
 use App\Http\Controllers\Api\UserKeluhanController;
+use App\Http\Controllers\Api\UserPembayaranController;
+use App\Http\Controllers\Api\UserPengumumanController;
+use App\Http\Controllers\Api\UserProfileController;
+use App\Http\Controllers\Api\UserSaranController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 // login & logout
 Route::post('/login', [UserController::class, 'login']);
@@ -35,13 +36,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/saran', [UserSaranController::class, 'index']);
     Route::post('/saran', [UserSaranController::class, 'store']);
 
-    Route::get('/keluhan', [UserKeluhanController::class, 'index']);               // daftar keluhan
-    Route::post('/keluhan', [UserKeluhanController::class, 'store']);             // kirim keluhan
-    Route::get('/keluhan/replies', [UserKeluhanController::class, 'replies']);      // semua balasan
+    Route::get('/keluhan', [UserKeluhanController::class, 'index']);           // daftar keluhan
+    Route::post('/keluhan', [UserKeluhanController::class, 'store']);          // kirim keluhan
+    Route::get('/keluhan/replies', [UserKeluhanController::class, 'replies']); // semua balasan
     Route::get('/keluhan/{keluhan_id}/replies', [UserKeluhanController::class, 'showReplies']);
+
+    Route::get('/pembayaran', [UserPembayaranController::class, 'index']);
+    Route::get('/pembayaran/riwayat', [UserPembayaranController::class, 'riwayat']);
+    Route::post('/pembayaran/midtrans', [MidtransController::class, 'createSnapToken']);
+    Route::get('/pembayaran/{id}', [UserPembayaranController::class, 'detail']);
 });
-
-
-
-
-

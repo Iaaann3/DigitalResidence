@@ -2,7 +2,6 @@
 
 @section('content')
 
-<!-- Login Loading Overlay -->
 <div id="loginOverlay" class="login-overlay">
     <div class="login-overlay__inner">
         <img src="{{ asset('assets/images/logos/digital.png') }}"
@@ -146,15 +145,14 @@
         stroke-width: 6;
     }
     .ring-spin {
-        fill: none;
-        stroke: white;
-        stroke-width: 6;
-        stroke-linecap: round;
-        stroke-dasharray: 264;        /* 2 * π * 42 ≈ 264 */
-        stroke-dashoffset: 200;
-        animation: ringRotate 1.4s ease-in-out infinite;
-        filter: drop-shadow(0 0 6px rgba(255,255,255,.6));
-    }
+    fill: none;
+    stroke: white;
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-dasharray: 264;
+    stroke-dashoffset: 200;
+    animation: ringRotate 1.4s ease-in-out infinite;
+}
     @keyframes ringRotate {
         0%   { stroke-dashoffset: 240; transform-origin: 50% 50%; transform: rotate(0deg); }
         50%  { stroke-dashoffset: 60; }
@@ -294,7 +292,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <script>
-   /* ── Toggle password ── */
 function togglePassword() {
     const input = document.getElementById('password');
     const icon  = document.getElementById('toggle-icon');
@@ -307,7 +304,6 @@ function togglePassword() {
     }
 }
 
-/* ── Login via AJAX — overlay hanya muncul kalau sukses ── */
 document.getElementById('loginForm').addEventListener('submit', function (e) {
     e.preventDefault();
 
@@ -316,13 +312,11 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
     var btnText = document.getElementById('btnText');
     var overlay = document.getElementById('loginOverlay');
 
-    /* Validasi HTML5 dulu */
     if (!form.checkValidity()) {
         form.reportValidity();
         return;
     }
 
-    /* Disable tombol & ubah teks saat request berlangsung */
     btn.classList.add('loading');
     btn.disabled  = true;
     btnText.textContent = 'Memeriksa...';
@@ -335,25 +329,21 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
     .then(function (res) { return res.json(); })
     .then(function (data) {
         if (data.success) {
-            /* ✅ Login berhasil — tampilkan overlay, langsung redirect tanpa fade out */
             overlay.style.display = 'flex';
             requestAnimationFrame(function () {
                 requestAnimationFrame(function () {
                     overlay.classList.add('active');
-                    /* Overlay tetap aktif sampai halaman baru kebuka */
                     setTimeout(function () {
                         window.location.href = data.redirect_url;
                     }, 1200);
                 });
             });
         } else {
-            /* ❌ Login gagal — tampilkan pesan error, reset tombol */
             showError(data.message || 'No. Rumah atau password salah.');
             resetBtn();
         }
     })
     .catch(function () {
-        /* Network error — fallback submit biasa */
         form.submit();
     });
 
