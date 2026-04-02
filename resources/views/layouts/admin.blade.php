@@ -5,49 +5,73 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <link rel="shortcut icon" type="image/png" href="{{ asset('assets/images/logos/digital1.png') }}" />
   <link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}" />
-
   <title>Digital Residence</title>
   <link rel="stylesheet" href="{{ asset('assets/libs/owl.carousel/dist/assets/owl.carousel.min.css') }}" />
+  <style>
+    /* Hilangkan scroll sidebar */
+    .left-sidebar {
+      overflow-y: hidden !important;
+    }
+    .sidebar-nav {
+      overflow-y: hidden !important;
+      height: auto !important;
+    }
+    /* Brand section di sidebar */
+    .sidebar-brand-box {
+      text-align: center;
+      padding: 20px 16px 12px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    .sidebar-brand-box .brand-logo-img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid var(--bs-primary);
+      margin-bottom: 12px;
+    }
+    .sidebar-brand-box .admin-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--bs-primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin: 0 auto 8px;
+    }
+    .sidebar-brand-box .admin-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+    }
+    .sidebar-brand-box .admin-badge {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: rgba(var(--bs-primary-rgb), 0.12);
+      color: var(--bs-primary);
+      display: inline-block;
+      margin-top: 4px;
+    }
+    /* Saat collapsed sembunyikan brand text */
+    .left-sidebar.mini-sidebar .sidebar-brand-box .hide-on-collapse {
+      display: none !important;
+    }
+  </style>
 </head>
 
 <body>
-  <!-- <div class="toast toast-onload align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="toast-body hstack align-items-start gap-6">
-      <i class="ti ti-alert-circle fs-6"></i>
-      <div>
-        <h5 class="text-white fs-3 mb-1">Welcome Admin</h5>
-        <h6 class="text-white fs-2 mb-0">Pesona Prima 8 Banjaran</h6>
-      </div>
-      <button type="button" class="btn-close btn-close-white fs-2 m-0 ms-auto shadow-none" data-bs-dismiss="toast" aria-label="Close"></button>
-    </div>
-  </div> -->
-
-  <div class="preloader">
-    <img src="{{ asset('assets/images/logos/digital1.png') }}" alt="loader"
-     class="lds-ripple" style="width: 150px;" />
-  </div>
 
   <div id="main-wrapper">
+
     <!-- Sidebar Start -->
-   <aside class="left-sidebar with-vertical" id="sidebarDesktop">
-    <div class="brand-logo d-flex align-items-center justify-content-between">
+    <aside class="left-sidebar with-vertical" id="sidebarDesktop">
 
-        <img src="{{ asset('assets/images/logos/digital.png') }}" alt="Logo"
-     class="rounded-circle border border-2 border-primary mx-auto d-block"
-     style="width:130px; height:130px; object-fit:cover;"  id="sidebarTitle">
-
-        <a href="javascript:void(0)" class="sidebartoggler d-block d-xl-none" id="sidebarToggleMobile">
-            <i class="ti ti-x"></i>
-        </a>
-    </div>
-
-    <!-- User Info Header (Pindah ke sini biar gak overlap, ganti fixed-profile) -->
-    <div style="position: relative; z-index: 10;">
-
-    </div>
 
       @include('layouts.components.sidebar')
     </aside>
@@ -59,12 +83,12 @@
       <div class="container-fluid">
         @yield('content')
         @stack('scripts')
-
       </div>
     </div>
+
   </div>
 
-  <!-- JS Vendor -->
+  <!-- JS -->
   <script src="{{ asset('assets/js/vendor.min.js') }}"></script>
   <script src="{{ asset('assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
   <script src="{{ asset('assets/libs/simplebar/dist/simplebar.min.js') }}"></script>
@@ -76,22 +100,20 @@
   <script src="{{ asset('assets/libs/owl.carousel/dist/owl.carousel.min.js') }}"></script>
   <script src="{{ asset('assets/libs/apexcharts/dist/apexcharts.min.js') }}"></script>
   <script src="{{ asset('assets/js/dashboards/dashboard.js') }}"></script>
+
   <script>
-const sidebarToggle = document.getElementById('headerCollapse');
-const sidebar = document.getElementById('sidebarDesktop');
-const sidebarTitle = document.getElementById('sidebarTitle');
+    const sidebarToggle = document.getElementById('headerCollapse');
+    const sidebar       = document.getElementById('sidebarDesktop');
+    const sidebarLogo   = document.getElementById('sidebarLogo');
 
-sidebarToggle.addEventListener('click', () => {
-    sidebar.classList.toggle('collapsed');
+    sidebarToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('mini-sidebar');
 
-    // sembunyikan judul saat sidebar collapsed
-    if(sidebar.classList.contains('collapsed')){
-        sidebarTitle.style.display = 'none';
-    } else {
-        sidebarTitle.style.display = 'block';
-    }
-});
-</script>
+      const isCollapsed = sidebar.classList.contains('mini-sidebar');
+      sidebarLogo.style.width  = isCollapsed ? '40px'  : '80px';
+      sidebarLogo.style.height = isCollapsed ? '40px'  : '80px';
+    });
+  </script>
+
 </body>
-
 </html>

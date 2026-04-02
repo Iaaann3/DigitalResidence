@@ -18,8 +18,7 @@ Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanc
 
 // semua route yang butuh token Sanctum
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', function (Request $request) {
-        return $request->user();
+    Route::get('/user', function (Request $request) {        return $request->user();
     });
 
     Route::get('/dashboard', [UserDashboardController::class, 'index']);
