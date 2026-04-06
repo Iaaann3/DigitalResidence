@@ -99,125 +99,237 @@
         </template>
 
         <!-- Iklan Carousel -->
-        <template x-if="loading">
-            <div class="my-4 skeleton">
-                <div class="skeleton-item" style="height:200px; border-radius:8px; margin-bottom:12px;"></div>
-                <div class="skeleton-item" style="height:24px; width:70%; margin:0 auto 8px;"></div>
-                <div class="skeleton-item" style="height:16px; width:50%; margin:0 auto;"></div>
-            </div>
-        </template>
-        <template x-if="!loading">
-           @if($iklans->count() > 0)
-<div id="iklanCarousel" class="carousel slide iklan-carousel my-4" data-bs-ride="carousel" data-bs-interval="3500">
-    <div class="carousel-inner rounded-4 shadow-sm">
-        @foreach($iklans as $key => $iklan)
-        <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-            <img src="{{ $iklan->gambar ? asset('storage/'.$iklan->gambar) : asset('images/default.jpg') }}"
-                 class="d-block w-100 iklan-img"
-                 alt="{{ $iklan->judul ?? 'Iklan' }}">
-
-            {{-- Caption overlay gradient --}}
-            <div class="iklan-caption">
-                <div class="iklan-caption__title">{{ $iklan->judul ?? '' }}</div>
-                @if($iklan->deskripsi)
-                <div class="iklan-caption__desc">{{ Str::limit($iklan->deskripsi, 60) }}</div>
-                @endif
-            </div>
-        </div>
-        @endforeach
-    </div>
-
-    {{-- Dots only, no arrows --}}
-    <div class="iklan-dots">
-        @foreach($iklans as $key => $iklan)
-        <button type="button"
-                data-bs-target="#iklanCarousel"
-                data-bs-slide-to="{{ $key }}"
-                class="iklan-dot {{ $key == 0 ? 'active' : '' }}"
-                aria-current="{{ $key == 0 ? 'true' : 'false' }}"
-                aria-label="Slide {{ $key + 1 }}">
-        </button>
-        @endforeach
-    </div>
-</div>
-@endif
-
-{{-- CSS — taruh di @push('styles') --}}
+        {{-- Taruh di @push('styles') --}}
 <style>
-.iklan-carousel {
+.iklan-wrap {
     position: relative;
     border-radius: 16px;
     overflow: hidden;
+    height: 200px;
+    background: #111;
 }
-
-/* Gambar iklan */
-.iklan-img {
-    height: 180px;
+.iklan-track {
+    display: flex;
+    height: 100%;
+    transition: transform .45s cubic-bezier(.4, 0, .2, 1);
+}
+.iklan-slide {
+    min-width: 100%;
+    height: 100%;
+    position: relative;
+    flex-shrink: 0;
+}
+.iklan-slide img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    border-radius: 16px;
     display: block;
 }
-
-/* Gradient caption di bawah */
-.iklan-caption {
+.iklan-overlay {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 28px 16px 42px; /* bawah lebih tinggi buat ngasih ruang dots */
-    background: linear-gradient(to top, rgba(0,0,0,.65) 0%, transparent 100%);
-    border-radius: 0 0 16px 16px;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,.72) 0%, rgba(0,0,0,.18) 55%, transparent 100%);
 }
-.iklan-caption__title {
-    font-size: 13px;
+
+/* Badge label atas kiri */
+.iklan-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(255,255,255,.18);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 0.5px solid rgba(255,255,255,.28);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 100px;
+    letter-spacing: .3px;
+}
+
+/* Caption bawah */
+.iklan-body {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 12px 14px 38px;
+}
+.iklan-title {
+    font-size: 14px;
     font-weight: 700;
     color: #fff;
-    line-height: 1.3;
-    margin-bottom: 2px;
-    text-shadow: 0 1px 4px rgba(0,0,0,.4);
+    line-height: 1.35;
+    margin: 0 0 3px;
+    text-shadow: 0 1px 6px rgba(0,0,0,.5);
 }
-.iklan-caption__desc {
+.iklan-desc {
     font-size: 11px;
-    color: rgba(255,255,255,.8);
-    line-height: 1.3;
+    color: rgba(255,255,255,.75);
+    line-height: 1.4;
+    margin: 0;
 }
 
-/* Dots container */
-.iklan-dots {
+/* Dots */
+.iklan-dots-wrap {
     position: absolute;
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     z-index: 10;
 }
-
-/* Tiap dot */
-.iklan-dot {
-    width: 6px;
-    height: 6px;
+.iklan-d {
+    height: 5px;
+    width: 5px;
     border-radius: 100px;
-    background: rgba(255,255,255,.45);
+    background: rgba(255,255,255,.35);
     border: none;
     padding: 0;
     cursor: pointer;
     transition: width .3s ease, background .3s ease;
 }
-
-/* Dot aktif — melebar jadi pill */
-.iklan-dot.active {
+.iklan-d.on {
     width: 20px;
-    background: #ffffff;
+    background: #fff;
 }
 
-/* Transisi slide smooth */
-.iklan-carousel .carousel-item {
-    transition: transform .5s ease-in-out;
+/* Arrow nav */
+.iklan-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background: rgba(255,255,255,.15);
+    border: 0.5px solid rgba(255,255,255,.25);
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background .2s;
+}
+.iklan-arrow:hover { background: rgba(255,255,255,.3); }
+.iklan-arrow.prev { left: 10px; }
+.iklan-arrow.next { right: 10px; }
+
+/* Progress bar bawah */
+.iklan-progress {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 2px;
+    background: rgba(255,255,255,.65);
+    border-radius: 0 2px 2px 0;
+    transition: width .1s linear;
 }
 </style>
-        </template>
+
+{{-- HTML --}}
+@if($iklans->count() > 0)
+<div class="iklan-wrap my-4" id="iklanWrap">
+    <div class="iklan-track" id="iklanTrack">
+        @foreach($iklans as $iklan)
+        <div class="iklan-slide">
+            <img src="{{ $iklan->gambar ? asset('storage/'.$iklan->gambar) : asset('images/default.jpg') }}"
+                 alt="{{ $iklan->judul ?? 'Iklan' }}">
+            <div class="iklan-overlay"></div>
+            @if($iklan->kategori ?? false)
+            <span class="iklan-badge">{{ $iklan->kategori }}</span>
+            @endif
+            <div class="iklan-body">
+                @if($iklan->judul)
+                <p class="iklan-title">{{ $iklan->judul }}</p>
+                @endif
+                @if($iklan->deskripsi)
+                <p class="iklan-desc">{{ Str::limit($iklan->deskripsi, 60) }}</p>
+                @endif
+            </div>
+        </div>
+        @endforeach
+    </div>
+
+    <button class="iklan-arrow prev" id="iklanPrev">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="iklan-arrow next" id="iklanNext">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+
+    <div class="iklan-dots-wrap" id="iklanDots"></div>
+    <div class="iklan-progress" id="iklanProgress"></div>
+</div>
+@endif
+
+{{-- Taruh di @push('scripts') --}}
+<script>
+(function () {
+    const wrap     = document.getElementById('iklanWrap');
+    if (!wrap) return;
+    const track    = document.getElementById('iklanTrack');
+    const dotsWrap = document.getElementById('iklanDots');
+    const progress = document.getElementById('iklanProgress');
+    const slides   = track.querySelectorAll('.iklan-slide');
+    const total    = slides.length;
+    const INTERVAL = 3500;
+    let cur = 0, prog, progVal = 0, paused = false;
+
+    // Buat dots dinamis
+    slides.forEach((_, i) => {
+        const d = document.createElement('button');
+        d.className = 'iklan-d' + (i === 0 ? ' on' : '');
+        d.onclick = () => goTo(i);
+        dotsWrap.appendChild(d);
+    });
+
+    function updateDots() {
+        dotsWrap.querySelectorAll('.iklan-d').forEach((d, i) => {
+            d.className = 'iklan-d' + (i === cur ? ' on' : '');
+        });
+    }
+
+    function goTo(n) {
+        cur = (n + total) % total;
+        track.style.transform = `translateX(-${cur * 100}%)`;
+        updateDots();
+        resetProgress();
+    }
+
+    function resetProgress() {
+        clearInterval(prog);
+        progVal = 0;
+        progress.style.width = '0%';
+        if (!paused) startProgress();
+    }
+
+    function startProgress() {
+        prog = setInterval(() => {
+            progVal += 100 / (INTERVAL / 100);
+            progress.style.width = Math.min(progVal, 100) + '%';
+            if (progVal >= 100) goTo(cur + 1);
+        }, 100);
+    }
+
+    document.getElementById('iklanPrev').onclick = () => goTo(cur - 1);
+    document.getElementById('iklanNext').onclick = () => goTo(cur + 1);
+
+    // Pause on hover
+    wrap.addEventListener('mouseenter', () => { paused = true; clearInterval(prog); });
+    wrap.addEventListener('mouseleave', () => { paused = false; startProgress(); });
+
+    // Swipe support
+    let touchX = 0;
+    wrap.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+    wrap.addEventListener('touchend', e => {
+        const diff = touchX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 40) goTo(cur + (diff > 0 ? 1 : -1));
+    }, { passive: true });
+
+    startProgress();
+})();
+</script>
 
         <!-- Info dan Layanan -->
         <h3 class="section-title">Info dan Layanan</h3>
@@ -360,29 +472,95 @@
 <!-- Tata Tertib Modal -->
 <div class="modal fade" id="tataTertibModal" tabindex="-1" aria-labelledby="tataTertibLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="tataTertibLabel"><i class="fas fa-gavel me-2"></i> Tata Tertib Lingkungan</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+    <div class="modal-content border-0 rounded-4 overflow-hidden shadow">
+
+      <!-- Header -->
+      <div class="modal-header border-0 px-4 py-3" style="background: #185FA5;">
+        <div class="d-flex align-items-center gap-2">
+          <div class="d-flex align-items-center justify-content-center rounded-2 me-1"
+               style="width:32px;height:32px;background:rgba(255,255,255,0.15);">
+            <i class="fas fa-file-alt text-white" style="font-size:14px;"></i>
+          </div>
+          <div>
+            <h5 class="modal-title mb-0 text-white fw-medium" id="tataTertibLabel">Tata Tertib Lingkungan</h5>
+            <small class="text-white-50">Peraturan wajib dipatuhi seluruh warga</small>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white opacity-75" data-bs-dismiss="modal" aria-label="Tutup"></button>
       </div>
-      <div class="modal-body">
-        <p class="mb-3 text-muted">Berikut adalah peraturan dan tata tertib yang harus dipatuhi demi kenyamanan bersama:</p>
-        <ol style="padding-left: 20px;">
-          <li>Menjaga kebersihan lingkungan dan tidak membuang sampah sembarangan.</li>
-          <li>Patuh terhadap jadwal pengangkutan sampah dan gunakan tempat sampah yang disediakan.</li>
-          <li>Dilarang melakukan aktivitas yang mengganggu ketertiban umum.</li>
-          <li>Kendaraan parkir di tempat yang telah ditentukan dan tidak menghalangi akses.</li>
-          <li>Pemilik hewan peliharaan bertanggung jawab atas kebersihan dan perilaku hewan.</li>
-          <li>Setiap pemasangan pengumuman/iklan harus seizin pengelola.</li>
-          <li>Pelanggaran tata tertib dapat dikenakan sanksi sesuai ketentuan pengelola.</li>
-        </ol>
+
+      <!-- Body -->
+      <div class="modal-body px-4 pt-4 pb-2">
+
+        <!-- Info banner -->
+        <div class="d-flex align-items-start gap-2 rounded-3 p-3 mb-4"
+             style="background:#EBF4FF; border:0.5px solid #B5D4F4;">
+          <i class="fas fa-info-circle mt-1" style="font-size:13px;color:#185FA5;flex-shrink:0;"></i>
+          <p class="mb-0 small" style="color:#185FA5;">
+            Patuhi peraturan berikut demi kenyamanan dan ketertiban bersama.
+          </p>
+        </div>
+
+        <!-- Rules list -->
+        <div class="d-flex flex-column gap-2">
+
+          <!-- Rules 1–6: default style -->
+          <div class="d-flex align-items-start gap-3 rounded-3 p-3" style="background:#F8F9FA;border:0.5px solid #E0E0DD;">
+            <span class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0 fw-medium"
+                  style="width:22px;height:22px;min-width:22px;background:#185FA5;color:#fff;font-size:11px;">1</span>
+            <p class="mb-0 small">Jaga kebersihan lingkungan dan tidak membuang sampah sembarangan.</p>
+          </div>
+
+          <div class="d-flex align-items-start gap-3 rounded-3 p-3" style="background:#F8F9FA;border:0.5px solid #E0E0DD;">
+            <span class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0 fw-medium"
+                  style="width:22px;height:22px;min-width:22px;background:#185FA5;color:#fff;font-size:11px;">2</span>
+            <p class="mb-0 small">Patuhi jadwal pengangkutan sampah dan gunakan tempat sampah yang tersedia.</p>
+          </div>
+
+          <div class="d-flex align-items-start gap-3 rounded-3 p-3" style="background:#F8F9FA;border:0.5px solid #E0E0DD;">
+            <span class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0 fw-medium"
+                  style="width:22px;height:22px;min-width:22px;background:#185FA5;color:#fff;font-size:11px;">3</span>
+            <p class="mb-0 small">Dilarang melakukan aktivitas yang mengganggu ketertiban umum.</p>
+          </div>
+
+          <div class="d-flex align-items-start gap-3 rounded-3 p-3" style="background:#F8F9FA;border:0.5px solid #E0E0DD;">
+            <span class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0 fw-medium"
+                  style="width:22px;height:22px;min-width:22px;background:#185FA5;color:#fff;font-size:11px;">4</span>
+            <p class="mb-0 small">Parkir kendaraan di tempat yang ditentukan dan tidak menghalangi akses.</p>
+          </div>
+
+          <div class="d-flex align-items-start gap-3 rounded-3 p-3" style="background:#F8F9FA;border:0.5px solid #E0E0DD;">
+            <span class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0 fw-medium"
+                  style="width:22px;height:22px;min-width:22px;background:#185FA5;color:#fff;font-size:11px;">5</span>
+            <p class="mb-0 small">Pemilik hewan peliharaan bertanggung jawab atas kebersihan dan perilaku hewan.</p>
+          </div>
+
+          <div class="d-flex align-items-start gap-3 rounded-3 p-3" style="background:#F8F9FA;border:0.5px solid #E0E0DD;">
+            <span class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0 fw-medium"
+                  style="width:22px;height:22px;min-width:22px;background:#185FA5;color:#fff;font-size:11px;">6</span>
+            <p class="mb-0 small">Pemasangan pengumuman atau iklan wajib mendapat izin dari pengelola.</p>
+          </div>
+
+          <!-- Rule 7: warning highlight -->
+          <div class="d-flex align-items-start gap-3 rounded-3 p-3"
+               style="background:#FFFBEB;border:0.5px solid #FAC775;">
+            <span class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0 fw-medium"
+                  style="width:22px;height:22px;min-width:22px;background:#BA7517;color:#fff;font-size:11px;">7</span>
+            <p class="mb-0 small" style="color:#854F0B;">
+              Pelanggaran tata tertib dapat dikenakan sanksi sesuai ketentuan pengelola.
+            </p>
+          </div>
+
+        </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Tutup</button>
-        <button type="button" id="printTataTertibBtn" class="btn btn-primary">
-          <i class="fas fa-print me-1"></i> Cetak
+
+      <!-- Footer -->
+      <div class="modal-footer border-0 px-4 py-3" style="background:#F8F9FA;">
+        <button type="button"  class="btn btn-sm text-white fw-medium"
+                style="background:#185FA5;border:none;" data-bs-dismiss="modal">Saya Mengerti</button>
         </button>
       </div>
+
     </div>
   </div>
 </div>

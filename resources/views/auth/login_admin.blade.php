@@ -1,246 +1,245 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="login-container">
-    <div class="logo">
-        <img src="{{ asset('assets/images/logos/digital.png') }}" alt="Logo">
+<div class="login-bg">
+  <div class="login-card">
+
+    <div class="login-logo-ring">
+      <img src="{{ asset('assets/images/logos/digital.png') }}" alt="Logo">
     </div>
-    <h1 class="residence-name">Digital Residence</h1>
-    <h2 class="login-type">Login Admin</h2>
 
-    <form class="login-form" method="POST" action="{{ route('admin.login') }}">
-        @csrf
+    <h1 class="login-app-name">Digital Residence</h1>
 
-        <div class="input-group">
-            <input id="username" type="text" class="@error('username') is-invalid @enderror" 
-                   name="username" value="{{ old('username') }}" placeholder="Username" required autofocus>
-            @error('username')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-            @enderror
-        </div>
+    <div class="login-badge-wrap">
+      <span class="login-badge">
+        <i class="fas fa-shield-alt"></i> Login Admin
+      </span>
+    </div>
 
-        <!-- Input Password dengan Toggle Eye -->
-        <div class="input-group password-group">
-            <input id="password" type="password" class="@error('password') is-invalid @enderror" 
-                   name="password" placeholder="Password" required>
-            <span class="toggle-password" onclick="togglePassword()">
-                <i class="fas fa-eye" id="toggle-icon"></i>
-            </span>
-            @error('password')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-            @enderror
+    <form method="POST" action="{{ route('admin.login') }}">
+      @csrf
+
+      <div class="lf-field">
+        <label class="lf-label" for="username">Username</label>
+        <div class="lf-input-wrap">
+          <i class="fas fa-user lf-icon"></i>
+          <input id="username" type="text" name="username"
+                 class="lf-input @error('username') is-invalid @enderror"
+                 value="{{ old('username') }}" placeholder="Masukkan username"
+                 required autofocus>
         </div>
-        
-        <button type="submit" class="submit-btn">
-            Login Admin
-        </button>
-        
-        <div class="switch-login">
-            <p>Login sebagai <a href="{{ route('login') }}">User</a></p>
+        @error('username')
+          <span class="lf-error">{{ $message }}</span>
+        @enderror
+      </div>
+
+      <div class="lf-field">
+        <label class="lf-label" for="password">Password</label>
+        <div class="lf-input-wrap">
+          <i class="fas fa-lock lf-icon"></i>
+          <input id="password" type="password" name="password"
+                 class="lf-input @error('password') is-invalid @enderror"
+                 placeholder="Masukkan password" required>
+          <button type="button" class="lf-eye" onclick="togglePassword()">
+            <i class="fas fa-eye" id="toggle-icon"></i>
+          </button>
         </div>
+        @error('password')
+          <span class="lf-error">{{ $message }}</span>
+        @enderror
+      </div>
+
+      <button type="submit" class="lf-btn">
+        <i class="fas fa-sign-in-alt"></i> Masuk sebagai Admin
+      </button>
+
+      <div class="lf-switch">
+        Bukan admin? Login sebagai <a href="{{ route('login') }}">User</a>
+      </div>
+
     </form>
+  </div>
 </div>
 
 <style>
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        background: #ffffff; /* 🔥 putih polos */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        margin: 0;
-        color: #333;
-    }
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
 
-    .login-container {
-        background: #fff;
-        border-radius: 20px;
-        padding: 40px;
-        text-align: center;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        max-width: 400px;
-        box-sizing: border-box;
-        border: 1px solid #eee;
-    }
+.login-bg {
+    background: #f0f4f8;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    box-sizing: border-box;
+}
 
-    .logo img {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        background-color: #f9f9f9;
-        border: 3px solid #ddd;
-        padding: 10px;
-    }
+.login-card {
+    background: #fff;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    padding: 40px 36px;
+    width: 100%;
+    max-width: 380px;
+    box-sizing: border-box;
+    text-align: center;
+}
 
-    .residence-name {
-        font-size: 24px;
-        font-weight: 600;
-        color: #333;
-        margin: 20px 0 10px 0;
-    }
+/* Logo */
+.login-logo-ring {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #E6F1FB;
+    border: 2px solid #B5D4F4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    overflow: hidden;
+}
+.login-logo-ring img {
+    width: 52px;
+    height: 52px;
+    object-fit: contain;
+    border-radius: 50%;
+}
 
-    .login-type {
-        font-size: 18px;
-        font-weight: 500;
-        color: #555;
-        margin: 0 0 25px 0;
-        background: #f4f4f4;
-        padding: 8px 16px;
-        border-radius: 20px;
-        display: inline-block;
-    }
+.login-app-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 10px;
+}
 
-    .input-group {
-        margin-bottom: 20px;
-        position: relative;
-    }
+/* Badge pill */
+.login-badge-wrap { margin-bottom: 28px; }
+.login-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #E6F1FB;
+    color: #0C447C;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 100px;
+    border: 1px solid #B5D4F4;
+}
 
-    .input-group input {
-        width: 100%;
-        padding: 15px 20px;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        background-color: #fff;
-        font-size: 16px;
-        color: #333;
-        transition: border-color 0.3s, box-shadow 0.3s;
-        box-sizing: border-box;
-    }
-    
-    .input-group input:focus {
-        outline: none;
-        border-color: #3498db;
-        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-    }
-    
-    .input-group input::placeholder {
-        color: #aaa;
-    }
+/* Field */
+.lf-field { margin-bottom: 18px; text-align: left; }
+.lf-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+.lf-input-wrap { position: relative; }
+.lf-icon {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 14px;
+    pointer-events: none;
+}
+.lf-input {
+    width: 100%;
+    padding: 11px 14px 11px 36px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #0f172a;
+    background: #fff;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+}
+.lf-input:focus {
+    border-color: #378ADD;
+    box-shadow: 0 0 0 3px rgba(55,138,221,.12);
+}
+.lf-input::placeholder { color: #cbd5e1; }
+.lf-input.is-invalid { border-color: #E24B4A; }
+.lf-eye {
+    position: absolute;
+    right: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #94a3b8;
+    padding: 4px;
+    transition: color .2s;
+}
+.lf-eye:hover { color: #378ADD; }
+.lf-error {
+    display: block;
+    font-size: 12px;
+    color: #E24B4A;
+    margin-top: 5px;
+}
 
-    .input-group .is-invalid {
-        border: 2px solid #e74c3c;
-    }
+/* Submit */
+.lf-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    background: #185FA5;
+    cursor: pointer;
+    transition: background .2s, transform .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 6px;
+}
+.lf-btn:hover {
+    background: #0C447C;
+    transform: translateY(-1px);
+}
+.lf-btn:active { transform: translateY(0); }
 
-    .invalid-feedback {
-        color: #e74c3c;
-        font-size: 12px;
-        position: absolute;
-        bottom: -18px;
-        left: 0;
-    }
-
-    /* Tambahan: Style untuk Password Toggle */
-    .password-group {
-        position: relative;
-    }
-
-    .toggle-password {
-        position: absolute;
-        right: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        cursor: pointer;
-        color: #aaa;
-        z-index: 10;
-        transition: color 0.3s;
-        padding: 5px;
-    }
-
-    .toggle-password:hover {
-        color: #3498db;
-    }
-
-    .toggle-password i {
-        font-size: 16px;
-    }
-
-    .remember-me {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 25px;
-        color: #555;
-    }
-
-    .remember-me input[type="checkbox"] {
-        margin-right: 8px;
-        transform: scale(1.2);
-    }
-
-    .remember-me label {
-        font-size: 14px;
-        cursor: pointer;
-    }
-
-    .submit-btn {
-        width: 100%;
-        padding: 15px;
-        border: none;
-        border-radius: 10px;
-        font-size: 18px;
-        font-weight: 600;
-        color: white;
-        background: linear-gradient(to right, #3498db, #2c3e50);
-        cursor: pointer;
-        transition: background-color 0.3s, transform 0.2s;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .submit-btn:hover {
-        background: linear-gradient(to right, #2c3e50, #3498db);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .switch-login {
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 1px solid #eee;
-    }
-
-    .switch-login p {
-        margin: 0;
-        font-size: 14px;
-        color: #555;
-    }
-
-    .switch-login a {
-        color: #3498db;
-        text-decoration: none;
-        font-weight: 600;
-        border-bottom: 1px solid transparent;
-        transition: border-bottom 0.3s;
-    }
-
-    .switch-login a:hover {
-        border-bottom: 1px solid #3498db;
-    }
+/* Switch */
+.lf-switch {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid #f1f5f9;
+    font-size: 13px;
+    color: #64748b;
+}
+.lf-switch a {
+    color: #185FA5;
+    text-decoration: none;
+    font-weight: 600;
+}
+.lf-switch a:hover { text-decoration: underline; }
 </style>
 
-<!-- Font Awesome untuk icon -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
 <script>
-    function togglePassword() {
-        const passwordInput = document.getElementById('password');
-        const toggleIcon = document.getElementById('toggle-icon');
-        
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            toggleIcon.classList.remove('fa-eye');
-            toggleIcon.classList.add('fa-eye-slash');
-        } else {
-            passwordInput.type = 'password';
-            toggleIcon.classList.remove('fa-eye-slash');
-            toggleIcon.classList.add('fa-eye');
-        }
+function togglePassword() {
+    const inp = document.getElementById('password');
+    const icon = document.getElementById('toggle-icon');
+    if (inp.type === 'password') {
+        inp.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        inp.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
     }
+}
 </script>
-
 @endsection
