@@ -238,16 +238,6 @@
             white-space: nowrap;
         }
 
-        .info-badge {
-            background: #3b82f6;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            margin-right: 8px;
-        }
-
         .info-arrow {
             color: #cbd5e1;
             font-size: 20px;
@@ -295,10 +285,8 @@
             margin-bottom: 12px;
         }
 
-        .stat-icon.blue { background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); }
         .stat-icon.green { background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); }
         .stat-icon.purple { background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%); }
-        .stat-icon.orange { background: linear-gradient(135deg, #fb923c 0%, #f97316 100%); }
 
         .stat-number {
             font-size: 32px;
@@ -383,47 +371,41 @@
         }
 
         .avatar-wrapper {
-    position: relative;
-    width: 130px;               /* ukuran lingkaran – lebih besar dari edit page */
-    height: 130px;
-    margin: 0 auto 24px;        /* jarak bawah ke nama */
-}
+            position: relative;
+            width: 130px;
+            height: 130px;
+            margin: 0 auto 24px;
+        }
 
-.avatar-circle {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    overflow: hidden;
-    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 54px;            /* ukuran inisial lebih besar */
-    font-weight: 700;
-    border: 5px solid white;
-    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.25);
-}
+        .avatar-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 54px;
+            font-weight: 700;
+            border: 5px solid white;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.25);
+        }
 
-.avatar-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;          /* gambar mengisi penuh tanpa distorsi */
-    object-position: center;
-    display: block;
-}
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
 
-.avatar-initial {
-    font-size: 54px;            /* inisial juga lebih besar */
-}
+        .avatar-initial {
+            font-size: 54px;
+        }
 
-/* Opsional: efek hover */
-.avatar-wrapper:hover .avatar-circle {
-    transform: scale(1.05);
-    transition: transform 0.3s ease;
-}
-
-        /* Responsive */
+        /* Responsive Design */
         @media (min-width: 768px) {
             .profile-container {
                 margin: 24px auto;
@@ -466,13 +448,13 @@
                 font-size: 18px;
             }
 
-            .nav-settings {
-                width: 40px;
-                height: 40px;
-            }
-
             .profile-name {
                 font-size: 24px;
+            }
+
+            .avatar-wrapper {
+                width: 100px;
+                height: 100px;
             }
 
             .avatar-circle {
@@ -480,23 +462,12 @@
                 height: 100px;
                 font-size: 40px;
             }
-
-            .avatar-wrapper {
-                width: 100px;
-                height: 100px;
-            }
         }
 
         /* Animation */
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .animate-slide {
@@ -507,12 +478,112 @@
         .delay-2 { animation-delay: 0.2s; opacity: 0; }
         .delay-3 { animation-delay: 0.3s; opacity: 0; }
         .delay-4 { animation-delay: 0.4s; opacity: 0; }
+
+        /* Custom Logout Modal - Responsif untuk Mobile */
+        .logout-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 340px;
+            border-radius: 20px;
+            padding: 32px 24px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalPop 0.4s ease;
+        }
+
+        @keyframes modalPop {
+            from {
+                opacity: 0;
+                transform: scale(0.75) translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+
+        .modal-text {
+            font-size: 15.5px;
+            color: #64748b;
+            line-height: 1.55;
+            margin-bottom: 32px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .modal-btn-cancel {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .modal-btn-cancel:hover {
+            background: #e2e8f0;
+        }
+
+        .modal-btn-logout {
+            background: #ef4444;
+            color: white;
+        }
+
+        .modal-btn-logout:hover {
+            background: #dc2626;
+        }
+
+        /* Extra mobile optimization for modal */
+        @media (max-width: 480px) {
+            .modal-content {
+                padding: 28px 20px;
+            }
+            .modal-title {
+                font-size: 19px;
+            }
+            .modal-text {
+                font-size: 15px;
+            }
+            .modal-btn {
+                padding: 14px;
+                font-size: 14.5px;
+            }
+        }
     </style>
 
     <div class="profile-container">
         <!-- Top Navigation -->
         <nav class="top-navbar">
-               <i class="fa-regular fa-user"></i>
+            <i class="fa-regular fa-user"></i>
             <h1 class="nav-title">My Profile</h1>
             <a class="nav-profile">
                 <span style="font-size: 24px; color: white;"><i class="fa-solid fa-user"></i></span>
@@ -522,12 +593,12 @@
         <!-- Profile Card -->
         <section class="profile-card">
             <div class="avatar-wrapper">
-    @if($user->profile_photo_path)
-        <div class="avatar-circle">
-            <img src="{{ Storage::url($user->profile_photo_path) }}" 
-                 alt="Foto Profil {{ $user->name }}" 
-                 class="avatar-img">
-            </div>
+                @if($user->profile_photo_path)
+                    <div class="avatar-circle">
+                        <img src="{{ Storage::url($user->profile_photo_path) }}" 
+                             alt="Foto Profil {{ $user->name }}" 
+                             class="avatar-img">
+                    </div>
                 @else
                     <div class="avatar-circle avatar-initial">
                         {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
@@ -544,7 +615,7 @@
             <h3 class="section-title">Personal Information</h3>
             <ul class="info-list">
                 <li class="info-item animate-slide delay-1">
-                    <div class="info-icon-box"><i class="fa-solid fa-house"></i>    </div>
+                    <div class="info-icon-box"><i class="fa-solid fa-house"></i></div>
                     <div class="info-content">
                         <div class="info-label">No. Rumah</div>
                         <div class="info-value">{{ $user->no_rumah ?? '-' }}</div>
@@ -588,12 +659,9 @@
         </section>
 
         <!-- Settings & Actions -->
-        <form method="POST" action="{{ route('logout') }}">
-    @csrf
-    <button type="submit" style="all: unset; width: 100%;">
         <section class="info-section">
             <ul class="settings-list">
-                <li class="settings-item logout">
+                <li class="settings-item logout" id="logout-btn">
                     <div class="settings-icon-box">
                         <i class="fa-solid fa-right-from-bracket"></i>
                     </div>
@@ -602,46 +670,59 @@
                 </li>
             </ul>
         </section>
-    </button>
-</form>
-
 
         <!-- Footer -->
         <footer class="profile-footer">
             <p>Digital Residence Version 1.0</p>
         </footer>
     </div>
+
+    <!-- Pop-up Konfirmasi Logout -->
+    <div class="logout-modal" id="logout-modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Konfirmasi Logout</h3>
+            <p class="modal-text">Apakah Anda yakin ingin keluar dari akun ini?</p>
+            
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" id="cancel-btn">Batal</button>
+                <button class="modal-btn modal-btn-logout" id="confirm-logout">Logout</button>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Animate numbers
-        function animateNumber(id, target) {
-            const element = document.getElementById(id);
-            if (!element) return;
-            
-            let current = 0;
-            const duration = 2000;
-            const increment = target / (duration / 16);
-            
-            const timer = setInterval(() => {
-                current += increment;
-                if (current >= target) {
-                    element.textContent = target;
-                    clearInterval(timer);
-                } else {
-                    element.textContent = Math.floor(current);
-                }
-            }, 16);
-        }
 
-        // Start animations
-        setTimeout(() => {
-            animateNumber('prospekCount', 0);
-            animateNumber('ticketsCount', 0);
-        }, 500);
+        const logoutBtn = document.getElementById('logout-btn');
+        const modal = document.getElementById('logout-modal');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const confirmBtn = document.getElementById('confirm-logout');
 
+        logoutBtn.addEventListener('click', function() {
+            modal.style.display = 'flex';
+        });
+
+        cancelBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        confirmBtn.addEventListener('click', function() {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("logout") }}';
+            form.innerHTML = `<input type="hidden" name="_token" value="{{ csrf_token() }}">`;
+            document.body.appendChild(form);
+            form.submit();
+        });
+
+        // Klik di luar modal untuk menutup
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
     });
 </script>
 @endpush

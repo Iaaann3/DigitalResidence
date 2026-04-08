@@ -16,44 +16,32 @@
 
         .profile-container {
             max-width: 1000px;
-            margin: 0 auto 40px auto; /* tambah margin bawah biar tidak ketutup footer */
+            margin: 0 auto 40px auto;
             background: white;
             border-radius: 24px;
             overflow: hidden;
             box-shadow: 0 8px 32px rgba(0,0,0,0.08);
         }
 
-        /* Header Gradient (sama seperti top-navbar) */
-        /* Header Gradient – DIKECILIN */
-.edit-header {
-    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-    color: white;
-    padding: 20px 24px;          /* padding atas-bawah dikurangi dari 32px jadi 20px */
-    text-align: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.12); /* shadow lebih soft & kecil */
-}
+        /* Header Gradient */
+        .edit-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 20px 24px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
 
-.edit-header h2 {
-    margin: 0;
-    font-size: 24px;             /* ukuran font tetap 24px di desktop */
-    font-weight: 700;
-    letter-spacing: 0.5px;
-}
-
-/* Responsive – lebih kecil di mobile */
-@media (max-width: 767px) {
-    .edit-header {
-        padding: 16px 20px;      /* lebih tipis lagi di HP */
-    }
-    
-    .edit-header h2 {
-        font-size: 22px;         /* font lebih kecil di mobile */
-    }
-}
+        .edit-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
 
         /* Body Form */
         .edit-body {
-            padding: 40px 32px 80px 32px; /* padding bawah lebih besar biar tombol tidak terlalu dekat footer */
+            padding: 40px 32px 80px 32px;
         }
 
         .form-label {
@@ -67,7 +55,7 @@
             cursor: not-allowed;
         }
 
-        /* Avatar Preview (sama seperti profile utama) */
+        /* Avatar Preview */
         .avatar-preview {
             position: relative;
             width: 140px;
@@ -98,7 +86,7 @@
             display: block;
         }
 
-        /* Tombol (sama style btn-edit-profile) */
+        /* Tombol */
         .btn-back,
         .btn-primary {
             padding: 12px 32px;
@@ -144,6 +132,10 @@
                 padding: 24px 16px;
             }
 
+            .edit-header h2 {
+                font-size: 22px;
+            }
+
             .edit-body {
                 padding: 32px 20px 100px 20px;
             }
@@ -159,8 +151,97 @@
 
             .btn-back,
             .btn-primary {
-                font-size: 1.1rem;
-                padding: 1rem 1.5rem;
+                font-size: 1.05rem;
+                padding: 14px 24px;
+            }
+        }
+
+        /* Custom Save Confirmation Modal */
+        .save-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 340px;
+            border-radius: 20px;
+            padding: 32px 24px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalPop 0.4s ease;
+        }
+
+        @keyframes modalPop {
+            from {
+                opacity: 0;
+                transform: scale(0.75) translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+
+        .modal-text {
+            font-size: 15.5px;
+            color: #64748b;
+            line-height: 1.55;
+            margin-bottom: 32px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .modal-btn-cancel {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .modal-btn-cancel:hover {
+            background: #e2e8f0;
+        }
+
+        .modal-btn-save {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .modal-btn-save:hover {
+            background: #2563eb;
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                padding: 28px 20px;
             }
         }
     </style>
@@ -179,7 +260,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('user.profile.update') }}" enctype="multipart/form-data">
+            <form id="edit-form" method="POST" action="{{ route('user.profile.update') }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -187,7 +268,7 @@
                 <div class="text-center mb-5">
                     <label class="form-label fw-bold mb-3 d-block">Foto Profil</label>
                     <div class="avatar-preview">
-                        <div class="avatar-circle">
+                        <div class="avatar-circle" id="avatar-container">
                             @if($user->profile_photo_path)
                                 <img src="{{ Storage::url($user->profile_photo_path) }}" id="preview-img" alt="Foto Profil">
                             @else
@@ -263,12 +344,12 @@
                     <small class="text-muted mt-2 d-block">Kosongkan jika tidak ingin mengubah password.</small>
                 </div>
 
-                <!-- Tombol (simpel, di akhir form) -->
+                <!-- Tombol -->
                 <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mt-5">
                     <a href="{{ route('user.profile.index') }}" class="btn btn-back w-100 w-md-auto">
                         <i class="fas fa-arrow-left me-2"></i>Kembali
                     </a>
-                    <button type="submit" class="btn btn-primary w-100 w-md-auto">
+                    <button type="button" id="save-btn" class="btn btn-primary w-100 w-md-auto">
                         <i class="fas fa-save me-2"></i>Simpan Perubahan
                     </button>
                 </div>
@@ -276,28 +357,73 @@
         </div>
     </div>
 
-    <!-- Preview Foto Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const input = document.getElementById('profile_photo');
-            if (!input) return;
+    <!-- Pop-up Konfirmasi Simpan -->
+    <div class="save-modal" id="save-modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Konfirmasi Perubahan</h3>
+            <p class="modal-text">Apakah Anda yakin ingin menyimpan perubahan profil ini?</p>
+            
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" id="cancel-save">Batal</button>
+                <button class="modal-btn modal-btn-save" id="confirm-save">Simpan</button>
+            </div>
+        </div>
+    </div>
+@endsection
 
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // Preview Foto
+        const input = document.getElementById('profile_photo');
+        if (input) {
             input.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
 
                 const reader = new FileReader();
                 reader.onload = (event) => {
-                    const preview = document.getElementById('preview-img') || document.querySelector('.avatar-circle');
-                    const container = preview?.parentElement || preview;
-                    if (preview.tagName === 'DIV') {
-                        container.innerHTML = `<img id="preview-img" src="${event.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
-                    } else {
-                        preview.src = event.target.result;
-                    }
+                    const container = document.getElementById('avatar-container');
+                    container.innerHTML = `<img id="preview-img" src="${event.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
                 };
                 reader.readAsDataURL(file);
             });
-        });
-    </script>
-@endsection
+        }
+
+        // Konfirmasi Simpan
+        const saveBtn = document.getElementById('save-btn');
+        const modal = document.getElementById('save-modal');
+        const cancelBtn = document.getElementById('cancel-save');
+        const confirmBtn = document.getElementById('confirm-save');
+        const form = document.getElementById('edit-form');
+
+        if (saveBtn && modal) {
+            saveBtn.addEventListener('click', function() {
+                modal.style.display = 'flex';
+            });
+        }
+
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        }
+
+        if (confirmBtn && form) {
+            confirmBtn.addEventListener('click', function() {
+                form.submit();
+            });
+        }
+
+        // Klik di luar modal untuk menutup
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+@endpush
