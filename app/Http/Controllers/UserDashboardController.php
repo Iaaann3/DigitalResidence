@@ -123,7 +123,15 @@ class UserDashboardController extends Controller
             // Use HTTP request instead of SDK to avoid bugs
             $url = config('midtrans.is_production') ? 'https://app.midtrans.com/snap/v1/transactions' : 'https://app.sandbox.midtrans.com/snap/v1/transactions';
 
-            $response = Http::withHeaders([
+            // Disable SSL verification untuk development
+            $response = Http::withOptions([
+                'verify' => false, // Disable SSL verification
+                'curl'   => [
+                    CURLOPT_SSL_VERIFYPEER => false,                   // Disable peer verification
+                    CURLOPT_SSL_VERIFYHOST => 0,                       // Disable hostname verification
+                    CURLOPT_SSLVERSION     => CURL_SSLVERSION_TLSv1_2, // Force TLS 1.2
+                ],
+            ])->withHeaders([
                 'Authorization' => 'Basic ' . base64_encode(config('midtrans.server_key') . ':'),
                 'Content-Type'  => 'application/json',
             ])->post($url, $params);
