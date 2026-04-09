@@ -634,7 +634,7 @@
     </div>
   </div>
 </div>
- 
+
 
 @endsection
 
@@ -971,6 +971,9 @@ function getCsrfToken() {
 
 document.addEventListener("DOMContentLoaded", function () {
 
+    let isProcessing = false; // Prevent multiple requests
+    let snapActive = false; // Track if Snap popup is active
+
     // Print Tata Tertib tetap
     document.getElementById('printTataTertibBtn')?.addEventListener('click', function () {
         const modalBody = document.querySelector('#tataTertibModal .modal-body');
@@ -1017,6 +1020,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const bayarBtn = document.getElementById('bayarMidtransBtn');
 
     bayarBtn?.addEventListener('click', async function () {
+        if (isProcessing || snapActive) return; // Prevent multiple clicks or if Snap is active
+
         const id = document.getElementById('id_tagihan').value?.trim();
 
         if (!id || !/^\d+$/.test(id)) {
@@ -1032,6 +1037,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const csrf = getCsrfToken();
         if (!csrf) return alert('CSRF token hilang. Refresh halaman.');
 
+        isProcessing = true; // Set processing flag
         const original = this.innerHTML;
         this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Memproses...';
         this.disabled = true;
@@ -1047,6 +1053,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = await res.json();
 
             if (data.success && data.snap_token) {
+                snapActive = true; // Mark Snap as active
                 window.snap.pay(data.snap_token, {
                     onSuccess: async (result) => {
                         await fetch('/user/update-status-tagihan', {
@@ -1063,7 +1070,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
                     onPending:  () => { alert('Pembayaran pending'); location.reload(); },
                     onError:    (err) => { alert('Gagal: ' + (err.status_message || 'error')); location.reload(); },
-                    onClose:    () => { }
+                    onClose:    () => {
+                        snapActive = false;
+                        isProcessing = false;
+                        bayarBtn.innerHTML = original;
+                        bayarBtn.disabled = false;
+                    }
                 });
             } else {
                 alert(data.message || 'Gagal memproses pembayaran');
@@ -1071,8 +1083,11 @@ document.addEventListener("DOMContentLoaded", function () {
         } catch (err) {
             alert('Koneksi error: ' + err.message);
         } finally {
-            this.innerHTML = original;
-            this.disabled = false;
+            if (!snapActive) { // Only enable if Snap is not active (e.g., fetch failed)
+                this.innerHTML = original;
+                this.disabled = false;
+                isProcessing = false;
+            }
         }
     });
 
@@ -1082,6 +1097,8 @@ document.addEventListener("DOMContentLoaded", function () {
         bayarBtn.disabled = true;
         document.getElementById('id_tagihan').value = '';
         document.getElementById('display_nominal').textContent = 'Rp 0';
+        isProcessing = false;
+        snapActive = false;
     });
 });
 </script>
