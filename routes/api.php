@@ -18,8 +18,7 @@ Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanc
 
 // semua route yang butuh token Sanctum
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', function (Request $request) {        return $request->user();
-    });
+    Route::get('/user', function (Request $request) {return $request->user();});
 
     Route::get('/dashboard', [UserDashboardController::class, 'index']);
     Route::post('/pembayaran', [UserDashboardController::class, 'store']);
@@ -43,5 +42,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/pembayaran', [UserPembayaranController::class, 'index']);
     Route::get('/pembayaran/riwayat', [UserPembayaranController::class, 'riwayat']);
     Route::post('/pembayaran/midtrans', [MidtransController::class, 'createSnapToken']);
-    Route::get('/pembayaran/{id}', [UserPembayaranController::class, 'detail']);
+    Route::get('/pembayaran/midtrans', function () {
+        return response()->json([
+            'success' => false,
+            'message' => 'Gunakan metode POST untuk API Midtrans',
+        ], 405);
+    });
+    Route::get('/pembayaran/{id}', [UserPembayaranController::class, 'detail'])->whereNumber('id');
 });
