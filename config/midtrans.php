@@ -2,7 +2,7 @@
 // config/midtrans.php
 
 return [
-    'merchant_id'   => env('MIDTRANS_MERCHANT_ID'),
+    'merchant_id'   => (string) env('MIDTRANS_MERCHANT_ID'),
     'client_key'    => env('MIDTRANS_CLIENT_KEY'),
     'server_key'    => env('MIDTRANS_SERVER_KEY'),
 
@@ -19,7 +19,7 @@ return [
 
     // URL untuk Snap JS (berbeda untuk Sandbox dan Production)
     // Script ini akan diload di frontend (Blade)
-    'snap_url' => env('MIDTRANS_IS_PRODUCTION', false)
+    'snap_url'      => env('MIDTRANS_IS_PRODUCTION', false)
         ? 'https://app.midtrans.com/snap/snap.js'
         : 'https://app.sandbox.midtrans.com/snap/snap.js',
 ];

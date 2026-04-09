@@ -97,6 +97,7 @@ class UserDashboardController extends Controller
             // Setup Midtrans
             Config::$serverKey    = config('midtrans.server_key');
             Config::$isProduction = config('midtrans.is_production', false);
+            Config::$merchantId   = config('midtrans.merchant_id');
             Config::$isSanitized  = true;
             Config::$is3ds        = true;
 
