@@ -8,8 +8,7 @@ use App\Models\Pengumuman;
 use App\Models\Rekening;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Midtrans\Config;
-use Midtrans\Snap;
+use Illuminate\Support\Facades\Http;
 
 class UserDashboardController extends Controller
 {
@@ -94,13 +93,6 @@ class UserDashboardController extends Controller
                 'existing_order_id' => $pembayaran->order_id,
             ]);
 
-            // Setup Midtrans
-            Config::$serverKey    = config('midtrans.server_key');
-            Config::$isProduction = config('midtrans.is_production', false);
-            Config::$merchantId   = config('midtrans.merchant_id');
-            Config::$isSanitized  = true;
-            Config::$is3ds        = true;
-
             // SELALU BUAT ORDER ID BARU untuk menghindari "order_id has already been taken"
             $orderId = 'IPL-' . $pembayaran->id . '-' . time() . '-' . rand(1000, 9999);
 
@@ -128,9 +120,20 @@ class UserDashboardController extends Controller
 
             \Log::info('Midtrans Params:', $params);
 
-            $snapToken = Snap::getSnapToken($params);
+            // Use HTTP request instead of SDK to avoid bugs
+            $url = config('midtrans.is_production') ? 'https://app.midtrans.com/snap/v1/transactions' : 'https://app.sandbox.midtrans.com/snap/v1/transactions';
 
-            \Log::info('Snap Token generated, length: ' . strlen($snapToken));
+            $response = Http::withHeaders([
+                'Authorization' => 'Basic ' . base64_encode(config('midtrans.server_key') . ':'),
+                'Content-Type'  => 'application/json',
+            ])->post($url, $params);
+
+            if ($response->successful()) {
+                $data      = $response->json();
+                $snapToken = $data['token'];
+            } else {
+                throw new \Exception('Midtrans API error: ' . $response->body());
+            }
 
             return response()->json([
                 'success'    => true,
