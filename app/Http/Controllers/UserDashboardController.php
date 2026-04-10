@@ -8,7 +8,6 @@ use App\Models\Pengumuman;
 use App\Models\Rekening;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 
 class UserDashboardController extends Controller
 {
@@ -120,28 +119,43 @@ class UserDashboardController extends Controller
 
             \Log::info('Midtrans Params:', $params);
 
-            // Use HTTP request instead of SDK to avoid bugs
-            $url = config('midtrans.is_production') ? 'https://app.midtrans.com/snap/v1/transactions' : 'https://app.sandbox.midtrans.com/snap/v1/transactions';
+            // Use raw cURL request instead of SDK or Laravel HTTP client
+            $url = config('midtrans.is_production')
+                ? 'https://app.midtrans.com/snap/v1/transactions'
+                : 'https://app.sandbox.midtrans.com/snap/v1/transactions';
 
-            // Disable SSL verification untuk development
-            $response = Http::withOptions([
-                'verify' => false, // Disable SSL verification
-                'curl'   => [
-                    CURLOPT_SSL_VERIFYPEER => false,                   // Disable peer verification
-                    CURLOPT_SSL_VERIFYHOST => 0,                       // Disable hostname verification
-                    CURLOPT_SSLVERSION     => CURL_SSLVERSION_TLSv1_2, // Force TLS 1.2
-                ],
-            ])->withHeaders([
-                'Authorization' => 'Basic ' . base64_encode(config('midtrans.server_key') . ':'),
-                'Content-Type'  => 'application/json',
-            ])->post($url, $params);
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Authorization: Basic ' . base64_encode(config('midtrans.server_key') . ':'),
+                'Content-Type: application/json',
+            ]);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
-            if ($response->successful()) {
-                $data      = $response->json();
-                $snapToken = $data['token'];
-            } else {
-                throw new \Exception('Midtrans API error: ' . $response->body());
+            $responseBody = curl_exec($ch);
+            $curlError    = curl_error($ch);
+            $httpStatus   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($responseBody === false) {
+                throw new \Exception('cURL error: ' . $curlError);
             }
+
+            if ($httpStatus < 200 || $httpStatus >= 300) {
+                throw new \Exception('Midtrans API error: HTTP ' . $httpStatus . ' - ' . $responseBody);
+            }
+
+            $data = json_decode($responseBody, true);
+            if (! is_array($data) || ! isset($data['token'])) {
+                throw new \Exception('Invalid response from Midtrans: ' . $responseBody);
+            }
+
+            $snapToken = $data['token'];
 
             return response()->json([
                 'success'    => true,

@@ -635,6 +635,83 @@
   </div>
 </div>
 
+<!-- =====================================================
+     ERROR MODAL PEMBAYARAN ← TAMBAHAN BARU
+     ===================================================== -->
+<div class="modal fade" id="errorPembayaranModal" tabindex="-1" aria-labelledby="errorPembayaranLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4 overflow-hidden shadow">
+
+      <!-- Header -->
+      <div class="modal-header border-0 px-4 py-3" style="background: #A32D2D;">
+        <div class="d-flex align-items-center gap-2">
+          <div class="d-flex align-items-center justify-content-center rounded-2 me-1"
+               style="width:32px;height:32px;background:rgba(255,255,255,0.15);">
+            <i class="fas fa-exclamation-triangle text-white" style="font-size:14px;"></i>
+          </div>
+          <div>
+            <h5 class="modal-title mb-0 text-white fw-medium" id="errorPembayaranLabel">Pembayaran Gagal</h5>
+            <small class="text-white-50">Terjadi kendala saat memproses</small>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white opacity-75" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body px-4 pt-4 pb-3 text-center">
+
+        <!-- Ikon animasi -->
+        <div class="error-icon-circle mx-auto mb-3">
+          <i class="fas fa-times-circle" style="font-size:36px; color:#A32D2D;"></i>
+        </div>
+
+        <h5 class="fw-medium mb-2" style="color:#1a1a1a;">Ups! Pembayaran Sedang Bermasalah 😔</h5>
+        <p class="text-muted mb-3" style="font-size:14px; line-height:1.6;">
+          Coba lagi beberapa saat lagi ya.<br>
+          Jika terus bermasalah, hubungi pengelola.
+        </p>
+
+        <!-- Error detail (opsional, diisi via JS) -->
+        <div id="errorDetailBox" class="d-none rounded-3 p-3 mb-3 text-start"
+             style="background:#FEF2F2; border:0.5px solid #FECACA;">
+          <p class="mb-0 small" style="color:#7F1D1D;">
+            <i class="fas fa-info-circle me-1"></i>
+            <span id="errorDetailText">-</span>
+          </p>
+        </div>
+
+        <!-- Tips -->
+        <div class="rounded-3 p-3 text-start" style="background:#FFF7ED; border:0.5px solid #FED7AA;">
+          <p class="mb-1 small fw-medium" style="color:#92400E;">
+            <i class="fas fa-lightbulb me-1"></i> Tips cepat:
+          </p>
+          <ul class="mb-0 ps-3 small" style="color:#78350F; line-height:1.8;">
+            <li>Pastikan koneksi internet stabil</li>
+            <li>Cek saldo / limit kartu kamu</li>
+            <li>Tunggu 1–2 menit lalu coba bayar ulang</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer border-0 px-4 py-3 gap-2" style="background:#F8F9FA;">
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
+          Tutup
+        </button>
+        <button type="button" class="btn btn-sm text-white fw-medium" id="retryPembayaranBtn"
+                style="background:#A32D2D; border:none;">
+          <i class="fas fa-redo me-1"></i> Coba Lagi
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- =====================================================
+     END ERROR MODAL
+     ===================================================== -->
+
 
 @endsection
 
@@ -920,6 +997,23 @@
     margin: 0 auto 12px;
 }
 
+/* ── Error Icon Circle ───────────────────────────────────── */
+.error-icon-circle {
+    width: 80px;
+    height: 80px;
+    background: #FEF2F2;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: errorPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes errorPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(163, 45, 45, 0.15); }
+    50%       { box-shadow: 0 0 0 10px rgba(163, 45, 45, 0); }
+}
+
 /* Responsive */
 @media (max-width: 480px) {
     .service-grid {
@@ -969,10 +1063,35 @@ function getCsrfToken() {
     return null;
 }
 
+// ── Helper: tampilkan error modal dengan pesan opsional ────────────────────
+function showErrorPembayaran(pesanError) {
+    const detailBox  = document.getElementById('errorDetailBox');
+    const detailText = document.getElementById('errorDetailText');
+
+    if (pesanError && detailBox && detailText) {
+        detailText.textContent = pesanError;
+        detailBox.classList.remove('d-none');
+    } else if (detailBox) {
+        detailBox.classList.add('d-none');
+    }
+
+    // Tutup modal pembayaran dulu (jika terbuka), lalu buka error modal
+    const modalPembayaran = bootstrap.Modal.getInstance(document.getElementById('pembayaranModal'));
+    if (modalPembayaran) {
+        modalPembayaran.hide();
+        document.getElementById('pembayaranModal').addEventListener('hidden.bs.modal', function openErr() {
+            new bootstrap.Modal(document.getElementById('errorPembayaranModal')).show();
+            this.removeEventListener('hidden.bs.modal', openErr);
+        });
+    } else {
+        new bootstrap.Modal(document.getElementById('errorPembayaranModal')).show();
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
 
-    let isProcessing = false; // Prevent multiple requests
-    let snapActive = false; // Track if Snap popup is active
+    let isProcessing = false;
+    let snapActive = false;
 
     // Print Tata Tertib tetap
     document.getElementById('printTataTertibBtn')?.addEventListener('click', function () {
@@ -987,7 +1106,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // ── SET VALUE INPUT & NOMINAL SAAT TOMBOL BAYAR DIKLIK ────────────────
-    // Pakai delegation supaya jalan meski tombol muncul belakangan (setelah skeleton)
     document.addEventListener('click', function(e) {
         const btn = e.target.closest('.bayar-home-btn');
         if (!btn) return;
@@ -999,7 +1117,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!id || !total) {
             console.warn('Data ID/Total hilang di tombol!');
-            alert('Tagihan tidak valid (ID atau nominal hilang)');
+            showErrorPembayaran('Tagihan tidak valid (ID atau nominal hilang).');
             return;
         }
 
@@ -1011,33 +1129,33 @@ document.addEventListener("DOMContentLoaded", function () {
         const formatted = new Intl.NumberFormat('id-ID').format(total);
         nominalDisp.textContent = 'Rp ' + formatted;
         bayarBtn.disabled = false;
-
-        // Bootstrap akan handle buka modal karena sudah ada data-bs-toggle & data-bs-target
-        // Tidak perlu manual bootstrap.Modal.show()
     });
 
     // ── BAYAR SEKARANG (klik di modal) ─────────────────────────────────────
     const bayarBtn = document.getElementById('bayarMidtransBtn');
 
     bayarBtn?.addEventListener('click', async function () {
-        if (isProcessing || snapActive) return; // Prevent multiple clicks or if Snap is active
+        if (isProcessing || snapActive) return;
 
         const id = document.getElementById('id_tagihan').value?.trim();
 
         if (!id || !/^\d+$/.test(id)) {
-            alert('ID tagihan tidak valid atau belum dipilih!');
+            showErrorPembayaran('ID tagihan tidak valid atau belum dipilih.');
             return;
         }
 
         if (typeof window.snap === 'undefined') {
-            alert('Midtrans Snap tidak tersedia. Refresh halaman.');
+            showErrorPembayaran('Layanan pembayaran tidak tersedia. Silakan refresh halaman.');
             return;
         }
 
         const csrf = getCsrfToken();
-        if (!csrf) return alert('CSRF token hilang. Refresh halaman.');
+        if (!csrf) {
+            showErrorPembayaran('Token keamanan hilang. Silakan refresh halaman.');
+            return;
+        }
 
-        isProcessing = true; // Set processing flag
+        isProcessing = true;
         const original = this.innerHTML;
         this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Memproses...';
         this.disabled = true;
@@ -1053,7 +1171,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = await res.json();
 
             if (data.success && data.snap_token) {
-                snapActive = true; // Mark Snap as active
+                snapActive = true;
                 window.snap.pay(data.snap_token, {
                     onSuccess: async (result) => {
                         await fetch('/user/update-status-tagihan', {
@@ -1068,9 +1186,12 @@ document.addEventListener("DOMContentLoaded", function () {
                         bootstrap.Modal.getInstance(document.getElementById('pembayaranModal'))?.hide();
                         setTimeout(() => new bootstrap.Modal(document.getElementById('successModal')).show(), 400);
                     },
-                    onPending:  () => { alert('Pembayaran pending'); location.reload(); },
-                    onError:    (err) => { alert('Gagal: ' + (err.status_message || 'error')); location.reload(); },
-                    onClose:    () => {
+                    onPending: () => { alert('Pembayaran pending'); location.reload(); },
+                    onError:   (err) => {
+                        // ← Pakai error modal, bukan alert biasa
+                        showErrorPembayaran(err.status_message || 'Terjadi kesalahan saat memproses pembayaran.');
+                    },
+                    onClose: () => {
                         snapActive = false;
                         isProcessing = false;
                         bayarBtn.innerHTML = original;
@@ -1078,12 +1199,14 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 });
             } else {
-                alert(data.message || 'Gagal memproses pembayaran');
+                // ← Pakai error modal
+                showErrorPembayaran(data.message || 'Gagal memproses pembayaran. Coba beberapa saat lagi.');
             }
         } catch (err) {
-            alert('Koneksi error: ' + err.message);
+            // ← Pakai error modal
+            showErrorPembayaran('Koneksi bermasalah: ' + err.message);
         } finally {
-            if (!snapActive) { // Only enable if Snap is not active (e.g., fetch failed)
+            if (!snapActive) {
                 this.innerHTML = original;
                 this.disabled = false;
                 isProcessing = false;
@@ -1091,7 +1214,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Reset modal
+    // Reset modal pembayaran
     document.getElementById('pembayaranModal')?.addEventListener('hidden.bs.modal', function () {
         bayarBtn.innerHTML = '<i class="fas fa-credit-card me-2"></i> Bayar Sekarang';
         bayarBtn.disabled = true;
@@ -1100,6 +1223,21 @@ document.addEventListener("DOMContentLoaded", function () {
         isProcessing = false;
         snapActive = false;
     });
+
+    // ── Tombol "Coba Lagi" di error modal → buka ulang modal pembayaran ──
+    document.getElementById('retryPembayaranBtn')?.addEventListener('click', function () {
+        const errModal = bootstrap.Modal.getInstance(document.getElementById('errorPembayaranModal'));
+        if (errModal) {
+            errModal.hide();
+            document.getElementById('errorPembayaranModal').addEventListener('hidden.bs.modal', function reopenPay() {
+                new bootstrap.Modal(document.getElementById('pembayaranModal')).show();
+                this.removeEventListener('hidden.bs.modal', reopenPay);
+            });
+        } else {
+            new bootstrap.Modal(document.getElementById('pembayaranModal')).show();
+        }
+    });
+
 });
 </script>
 @endpush
